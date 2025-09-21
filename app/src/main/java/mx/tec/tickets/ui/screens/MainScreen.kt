@@ -13,7 +13,7 @@ fun MainScreen() {
     if(isLogged)
         MenuScreen()
     else
-        LoginScreen(){
+        LoginScreen() {
             isLogged=true
         }
 }
