@@ -38,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
+// Vista de interior del ticket
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun VistaInteriorTicket() {

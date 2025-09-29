@@ -9,6 +9,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.toColorInt
 
+// Funcion para drop shadows
 fun Modifier.drawColoredShadow( // kudos to cedrickring for ColoredShadow.kt on github for the function modifier
     color: Color,
     alpha: Float = 0.2f,

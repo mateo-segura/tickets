@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
+// Vista principal tecnico
+
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun VistaPrincipalTecnico() {
