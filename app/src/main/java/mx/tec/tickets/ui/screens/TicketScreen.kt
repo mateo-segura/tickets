@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -21,6 +22,7 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
@@ -33,9 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import mx.tec.chat.ChatScreen
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
 // Vista de interior del ticket
@@ -43,24 +48,35 @@ import mx.tec.tickets.ui.theme.drawColoredShadow
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun VistaInteriorTicket() {
+    var editBoxSize by remember { mutableStateOf(0.dp)}
+    var infoColumnSize by remember { mutableStateOf(0.dp)}
     var initState by remember { mutableStateOf("Abierto") }
-    val scrollState = rememberScrollState()
+    val density = LocalDensity.current
+    //val scrollState = rememberScrollState()
 
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(Color.White)
-            .verticalScroll(scrollState)
     ){
 
         Box (
             modifier = Modifier
                 .fillMaxWidth()
         ) {
+
+            Surface (
+                modifier = Modifier
+                    .padding(top = infoColumnSize + editBoxSize)
+            ){
+                ChatScreen()
+            }
+
+            // Columna de datos de ticket
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 110.dp)
+                    .padding(top = editBoxSize)
                     .drawColoredShadow(
                         color = Color.Black,           // Shadow color
                         alpha = 0.25f,                 // Opacity of the shadow
@@ -69,6 +85,9 @@ fun VistaInteriorTicket() {
                         offsetY = 4.dp,                // Vertical offset (shadow below the box)
                         offsetX = 0.dp                 // Horizontal offset (centered)
                     )
+                    .onGloballyPositioned { coordinates ->
+                        infoColumnSize = with(density) { coordinates.size.height.toDp() }
+                    }
                     .background(Color.White)
             ){
                 Box(
@@ -142,16 +161,24 @@ fun VistaInteriorTicket() {
                             fontWeight = FontWeight.SemiBold
                         )
                     )
-                    Text(
-                        modifier = Modifier.fillMaxWidth()
-                            .padding(horizontal = 4.dp)
-                            .padding(vertical = 16.dp),
-                        text = "Lorem ipsum dolor carlos no qwuiere jugar nightreign.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
+
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(120.dp)
+                            .verticalScroll(rememberScrollState())
+                            .padding(horizontal = 4.dp, vertical = 16.dp)
+                    ){
+                        Text(
+                            text = "Lorem ipsum dolor carlos no qwuiere jugar nightreign.",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+
                 }
             }
 
+            // Caja de header superior "Edit"
             Box (
                 modifier = Modifier
                     .fillMaxWidth()
@@ -163,7 +190,10 @@ fun VistaInteriorTicket() {
                         offsetY = 4.dp,                // Vertical offset (shadow below the box)
                         offsetX = 0.dp                 // Horizontal offset (centered)
                     )
-                    .background(Color.White),
+                    .background(Color.White)
+                    .onGloballyPositioned { coordinates ->
+                        editBoxSize = with(density) { coordinates.size.height.toDp() }
+                    },
                 contentAlignment = Alignment.Center
             ){
                 Text (

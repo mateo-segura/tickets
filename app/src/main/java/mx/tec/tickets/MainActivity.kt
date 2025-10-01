@@ -14,7 +14,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             TicketsTheme {
                 MainScreen()
-
+                // VistaInteriorTicket()
                 // Comentario de Prueba parp probar el github UwU
 
             }
