@@ -14,6 +14,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import com.android.volley.Request
 import com.android.volley.Response
@@ -35,7 +36,8 @@ fun UserList(navController: NavController) {
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
-            .statusBarsPadding()
+            //.statusBarsPadding()
+            // Status bars padding estaba causando padding conflictivo
     ) {
         items(users) { user ->
             UserCard(user, navController)
