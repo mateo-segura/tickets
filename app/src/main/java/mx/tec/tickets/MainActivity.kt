@@ -4,6 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import mx.tec.chat.ChatScreen
 import mx.tec.tickets.navigation.AppNavigation
 import mx.tec.tickets.ui.screens.VistaInteriorTicket
 import mx.tec.tickets.ui.screens.VistaPrincipalTecnico
@@ -18,7 +19,7 @@ class MainActivity : ComponentActivity() {
                 // AppNavigation() // diagrama (componente ticket): https://drive.google.com/file/d/156gHLbHn6pczxFrlbUp2ROohhLyCS1jl/view?usp=sharing
                 // MainScreen() // AppBar archivos: https://drive.google.com/file/d/1UDDoKUqLj_I_v5XTkAVQWeb9VmkESt3I/view?usp=sharing
                 // VistaInteriorTicket()
-                VistaPrincipalTecnico()
+                ChatScreen()
                 // Comentario de Prueba parp probar el github UwU
 
             }

@@ -1,10 +1,11 @@
 package mx.tec.chat
-
+import mx.tec.tickets.ui.screens.UploadButton
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -12,8 +13,12 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import mx.tec.tickets.ui.screens.downloadFile
+import mx.tec.tickets.ui.screens.UploadButton
+import mx.tec.tickets.ui.screens.downloadFile
 import mx.tec.tickets.ui.theme.TicketsTheme
 
 class MainActivity : ComponentActivity() {
@@ -30,11 +35,14 @@ class MainActivity : ComponentActivity() {
 data class Message(
     val author: String,
     val body: String,
-    val isUser: Boolean = false // distinguishes user vs others
+    val isUser: Boolean = false,
+    val fileId: String? = null // 👈 si es mensaje de archivo
 )
 
 @Composable
 fun MessageCard(msg: Message) {
+    val contexto = LocalContext.current
+
     Row(
         modifier = Modifier
             .padding(8.dp)
@@ -63,6 +71,14 @@ fun MessageCard(msg: Message) {
                 modifier = Modifier
                     .animateContentSize()
                     .padding(1.dp)
+                    // 👇 solo clickeable si es archivo
+                    .let {
+                        if (msg.fileId != null)
+                            it.clickable() {
+                                downloadFile(contexto, msg.fileId)
+                            }
+                        else it
+                    }
             ) {
                 Text(
                     text = msg.body,
@@ -119,6 +135,19 @@ fun ChatScreen() {
                     placeholder = { Text("Escribe tu mensage...") }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
+                UploadButton(
+                    onFileSent = { fileName ->
+                        messages.add(
+                            0,
+                            Message(
+                                author = "You",
+                                body = "📎 $fileName",
+                                isUser = true,
+                                fileId = "11" //  cambia esto por el id real si tu backend lo devuelve
+                            )
+                        )
+                    }
+                )
                 Button(
                     onClick = {
                         if (currentText.isNotBlank()) {
