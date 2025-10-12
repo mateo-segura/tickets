@@ -4,14 +4,13 @@ import androidx.compose.animation.expandIn
 import androidx.compose.animation.shrinkOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import mx.tec.tickets.ui.UserList
-import mx.tec.tickets.ui.screens.UserDetailScreen
+import mx.tec.tickets.ui.TicketList
+import mx.tec.tickets.ui.screens.TicketDetailScreen
 
 @Composable
 fun AppNavigation() {
@@ -20,13 +19,14 @@ fun AppNavigation() {
     NavHost(
         navController = navController /*outlet en react */,
         startDestination = "lista"/*raiz como en react, solo es la forma en como se llama*/
-    ) { //declarar rutas
+    ) {
+        //declarar rutas
         composable("lista" /*id*/) {
-            UserList(navController /*cada componente necesita navcontroller*/)
+            TicketList(navController /*cada componente necesita navcontroller*/)
         }
         composable(
-            route = "detalle/{user}",  //no se pueden mandar a objetos, se necesita mandar en formato json
-            arguments = listOf(navArgument("user") { type = NavType.StringType }),
+            route = "detalle/{ticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
+            arguments = listOf(navArgument("ticket") { type = NavType.StringType }),
             //enterTransition = { slideInHorizontally(initialOffsetX = { it }) }, // desde la derecha, desde otra pantalla
             //exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },   // hacia la izquierda
             //enterTransition = { fadeIn(animationSpec = tween(500)) },
@@ -36,8 +36,8 @@ fun AppNavigation() {
             //popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) }, // desde popBackStack
             //popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
         ) { backStackEntry ->
-            val user = backStackEntry.arguments?.getString("user")
-            UserDetailScreen(user = user ?: "", navController)
+            val ticket = backStackEntry.arguments?.getString("ticket")
+            TicketDetailScreen(ticket = ticket ?: "", navController)
         }
     }
 }

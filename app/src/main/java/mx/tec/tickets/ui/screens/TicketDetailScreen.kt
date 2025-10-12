@@ -19,14 +19,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.google.gson.Gson
-import mx.tec.tickets.model.User
+import mx.tec.tickets.model.Ticket
 
 @Composable
-fun UserDetailScreen(user: String, navController: NavController) {
-    val userJson = Gson().fromJson(user, User::class.java)
-    Box(modifier = Modifier //el box hace que se sobrepongan
-        .statusBarsPadding()
-        .fillMaxSize()) {
+fun TicketDetailScreen(ticket: String, navController: NavController) {
+    val ticketJson = Gson().fromJson(ticket, Ticket::class.java)
+    Box(
+        modifier = Modifier //el box hace que se sobrepongan
+            .statusBarsPadding()
+            .fillMaxSize()
+    ) {
         IconButton(
             onClick = { navController.popBackStack() },
             modifier = Modifier
@@ -37,14 +39,14 @@ fun UserDetailScreen(user: String, navController: NavController) {
                 contentDescription = "Volver"
             )
         }
-        Column(modifier = Modifier
-            .padding(top = 56.dp)
-            .padding(horizontal = 16.dp)) {
-            Text("Detalles del usuario", style = MaterialTheme.typography.titleLarge)
+        Column(
+            modifier = Modifier
+                .padding(top = 56.dp)
+                .padding(horizontal = 16.dp)
+        ) {
+            Text(ticketJson.title, style = MaterialTheme.typography.titleLarge)
             Spacer(Modifier.height(8.dp))
-            Text("Name: ${userJson.firstName}")
-            Text("Username: ${userJson.username}")
-            Text("Enamil: ${userJson.email}")
+            Text(ticketJson.description)
         }
     }
 
