@@ -49,17 +49,25 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import mx.tec.tickets.navigation.AppNavigation
+import mx.tec.tickets.ui.theme.BottomSheetCreate
+import mx.tec.tickets.ui.theme.BottomSheetNew
+import mx.tec.tickets.ui.theme.BottomSheetTickets
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
 // Vista principal tecnico
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun VistaPrincipalTecnico() {
+fun MainTecnicoScreen() {
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
+    var showSheet by remember { mutableStateOf(false) }
+    var showSheetNew by remember { mutableStateOf(false) }
+    var showSheetCreate by remember { mutableStateOf(false) }
     val density = LocalDensity.current
+
 
     Column (
         modifier = Modifier
@@ -111,7 +119,7 @@ fun VistaPrincipalTecnico() {
                 val buttonHeight = 35.dp
 
                 Button (
-                    onClick = { /* TODO: Categoria */ },
+                    onClick = { showSheetNew = true },
                     shape = RoundedCornerShape(24.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     modifier = Modifier
@@ -135,7 +143,7 @@ fun VistaPrincipalTecnico() {
                     Text("Categoria", fontSize = 12.sp)
                 }
                 Button (
-                    onClick = { /* TODO: Prioridad */ },
+                    onClick = { showSheet = true },
                     shape = RoundedCornerShape(24.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     modifier = Modifier
@@ -159,7 +167,7 @@ fun VistaPrincipalTecnico() {
                     Text("Prioridad", fontSize = 12.sp)
                 }
                 Button (
-                    onClick = { /* TODO: Fecha */ },
+                    onClick = { showSheetCreate = true },
                     shape = RoundedCornerShape(24.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     modifier = Modifier
@@ -333,6 +341,23 @@ fun VistaPrincipalTecnico() {
                     Text("Editar")
                 }
             }
+
+            // Bottom Sheet
+
+            BottomSheetTickets (
+                showSheet = showSheet,
+                onDismiss = { showSheet = false}
+            )
+
+            BottomSheetNew (
+                showSheetNew = showSheetNew,
+                onDismiss = { showSheetNew = false}
+            )
+
+            BottomSheetCreate(
+                showSheetCreate = showSheetCreate,
+                onDismiss = { showSheetCreate = false }
+            )
         }
     }
 }
