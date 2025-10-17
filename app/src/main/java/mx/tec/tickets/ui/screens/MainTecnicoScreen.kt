@@ -49,8 +49,10 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import mx.tec.tickets.navigation.AppNavigation
+import mx.tec.tickets.ui.TicketList
 import mx.tec.tickets.ui.theme.BottomSheetCreate
 import mx.tec.tickets.ui.theme.BottomSheetNew
 import mx.tec.tickets.ui.theme.BottomSheetTickets
@@ -60,7 +62,7 @@ import mx.tec.tickets.ui.theme.drawColoredShadow
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainTecnicoScreen() {
+fun MainTecnicoScreen(navController: NavController) {
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
     var showSheet by remember { mutableStateOf(false) }
@@ -92,8 +94,8 @@ fun MainTecnicoScreen() {
         ){
             Text (
                 modifier = Modifier
-                    .padding(16.dp)
-                    .padding(WindowInsets.statusBars.asPaddingValues()),
+                    .padding(16.dp),
+                    /*.padding(WindowInsets.statusBars.asPaddingValues()), causaba problemas con el scaffold de MenuScreen.kt https://drive.google.com/file/d/1IXaWoe8pqS4JKnhNISbMsP_zsDsrOBsa/view?usp=sharing (falta arreglar) */
                 text = "Mis Tickets",
                 style = MaterialTheme.typography.titleLarge.copy(
                     shadow = Shadow(
@@ -194,7 +196,8 @@ fun MainTecnicoScreen() {
 
             // Espacio de tickets Mis Tickets
             Column () {
-                AppNavigation()
+                 // AppNavigation() este es el controlador de navegacion
+                TicketList(navController) // esta es la ruta para la lista de tickets
             }
 
         }
@@ -234,7 +237,8 @@ fun MainTecnicoScreen() {
             modifier = Modifier
                 .weight(1f)
         ){
-            AppNavigation()
+            // AppNavigation() este es el controlador de navegacion
+            TicketList(navController) // esta es la ruta para la lista de tickets
         }
 
         // Barra de navegacion
@@ -259,105 +263,106 @@ fun MainTecnicoScreen() {
 
          */
 
+        /*lo comenté porque el appbar está en MenuScreen.kt*/
+//        Box (
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .drawColoredShadow(
+//                    color = Color.Black,           // Shadow color
+//                    alpha = 0.25f,                 // Opacity of the shadow
+//                    borderRadius = 8.dp,           // Match your box corner radius
+//                    shadowRadius = 12.dp,          // Blur radius of the shadow
+//                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
+//                    offsetX = 0.dp                 // Horizontal offset (centered)
+//                )
+//                .requiredHeightIn(max = 120.dp)
+//                //.height(100.dp)
+//                .background(Color.White)
+//                .onGloballyPositioned { coordinates ->
+//                    navBarSize = with(density) { coordinates.size.height.toDp() }
+//                },
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceEvenly,
+//                verticalAlignment = Alignment.CenterVertically
+//            ){
+//
+//                Spacer(modifier = Modifier.weight(1f))
+//
+//                Column (
+//                    Modifier.size(notifIcon),
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ){
+//                    IconButton(onClick = { /* TODO: Handle Home */ }) {
+//                        Icon(
+//                            imageVector = Icons.Default.Home,
+//                            contentDescription = "Inicio",
+//                            tint = Color.Black
+//                        )
+//                    }
+//                    Text("Inicio")
+//                }
+//
+//                Spacer(modifier = Modifier.weight(3f))
+//
+//                Column (
+//                    Modifier.onGloballyPositioned { coordinates ->
+//                        notifIcon = with(density) { coordinates.size.height.toDp() }
+//                    },
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ){
+//                    IconButton(onClick = { /* TODO: Handle Settings */ }) {
+//                        Icon(
+//                            imageVector = Icons.Default.Notifications,
+//                            contentDescription = "Notifications",
+//                            tint = Color.Black
+//                        )
+//                    }
+//                    Text("Notificaciones")
+//                }
+//
+//                Spacer(modifier = Modifier.weight(1f))
+//            }
+//
+//            LargeFloatingActionButton (
+//                onClick = { /* TODO: Handle Search */ },
+//                shape = CircleShape,
+//                containerColor = Color.White,
+//                contentColor = Color.Black,
+//                modifier = Modifier
+//                    .offset(y = (-navBarSize.value/1.5f).dp)
+//                    .statusBarsPadding()
+//                    .requiredHeightIn(min = 100.dp)
+//            ) {
+//                Column(
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ){
+//                    Icon(Icons.Default.Create, contentDescription = "Editar",
+//                        modifier = Modifier
+//                            .padding(bottom = 4.dp))
+//                    Text("Editar")
+//                }
+//            }
+//
+//        }
 
-        Box (
-            modifier = Modifier
-                .fillMaxWidth()
-                .drawColoredShadow(
-                    color = Color.Black,           // Shadow color
-                    alpha = 0.25f,                 // Opacity of the shadow
-                    borderRadius = 8.dp,           // Match your box corner radius
-                    shadowRadius = 12.dp,          // Blur radius of the shadow
-                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                    offsetX = 0.dp                 // Horizontal offset (centered)
-                )
-                .requiredHeightIn(max = 120.dp)
-                //.height(100.dp)
-                .background(Color.White)
-                .onGloballyPositioned { coordinates ->
-                    navBarSize = with(density) { coordinates.size.height.toDp() }
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ){
+        // Bottom Sheet
 
-                Spacer(modifier = Modifier.weight(1f))
+        BottomSheetTickets (
+            showSheet = showSheet,
+            onDismiss = { showSheet = false}
+        )
 
-                Column (
-                    Modifier.size(notifIcon),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    IconButton(onClick = { /* TODO: Handle Home */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Inicio",
-                            tint = Color.Black
-                        )
-                    }
-                    Text("Inicio")
-                }
+        BottomSheetNew (
+            showSheetNew = showSheetNew,
+            onDismiss = { showSheetNew = false}
+        )
 
-                Spacer(modifier = Modifier.weight(3f))
-
-                Column (
-                    Modifier.onGloballyPositioned { coordinates ->
-                        notifIcon = with(density) { coordinates.size.height.toDp() }
-                    },
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    IconButton(onClick = { /* TODO: Handle Settings */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notifications",
-                            tint = Color.Black
-                        )
-                    }
-                    Text("Notificaciones")
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-            }
-
-            LargeFloatingActionButton (
-                onClick = { /* TODO: Handle Search */ },
-                shape = CircleShape,
-                containerColor = Color.White,
-                contentColor = Color.Black,
-                modifier = Modifier
-                    .offset(y = (-navBarSize.value/1.5f).dp)
-                    .statusBarsPadding()
-                    .requiredHeightIn(min = 100.dp)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Icon(Icons.Default.Create, contentDescription = "Editar",
-                        modifier = Modifier
-                            .padding(bottom = 4.dp))
-                    Text("Editar")
-                }
-            }
-
-            // Bottom Sheet
-
-            BottomSheetTickets (
-                showSheet = showSheet,
-                onDismiss = { showSheet = false}
-            )
-
-            BottomSheetNew (
-                showSheetNew = showSheetNew,
-                onDismiss = { showSheetNew = false}
-            )
-
-            BottomSheetCreate(
-                showSheetCreate = showSheetCreate,
-                onDismiss = { showSheetCreate = false }
-            )
-        }
+        BottomSheetCreate(
+            showSheetCreate = showSheetCreate,
+            onDismiss = { showSheetCreate = false }
+        )
     }
 }

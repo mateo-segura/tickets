@@ -10,6 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import mx.tec.tickets.ui.TicketList
+import mx.tec.tickets.ui.screens.MainScreen
+import mx.tec.tickets.ui.screens.MenuScreen
 import mx.tec.tickets.ui.screens.TicketDetailScreen
 
 @Composable
@@ -18,9 +20,15 @@ fun AppNavigation() {
 
     NavHost(
         navController = navController /*outlet en react */,
-        startDestination = "lista"/*raiz como en react, solo es la forma en como se llama*/
+        startDestination = "mainscreen"/*raiz como en react, solo es la forma en como se llama*/
     ) {
         //declarar rutas
+        composable("mainscreen"){
+            MainScreen(navController)
+        }
+        composable("menuscreen"){
+            MenuScreen(navController)
+        }
         composable("lista" /*id*/) {
             TicketList(navController /*cada componente necesita navcontroller*/)
         }
@@ -31,8 +39,8 @@ fun AppNavigation() {
             //exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },   // hacia la izquierda
             //enterTransition = { fadeIn(animationSpec = tween(500)) },
             //exitTransition = { fadeOut(animationSpec = tween(500)) },
-            enterTransition = { expandIn(expandFrom = Alignment.Center) },
-            exitTransition = { shrinkOut(shrinkTowards = Alignment.Center) },
+            //enterTransition = { expandIn(expandFrom = Alignment.Center) },
+            //exitTransition = { shrinkOut(shrinkTowards = Alignment.Center) },
             //popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) }, // desde popBackStack
             //popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
         ) { backStackEntry ->

@@ -15,13 +15,16 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AddCircle
 import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.BottomAppBar
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -41,35 +44,34 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import androidx.navigation.navArgument
+import mx.tec.tickets.ui.TicketList
 
 //viewmodel area compartida de todas las pantallas
 @Preview
 @Composable
-fun MenuScreen() {
+fun MenuScreen(navController: NavController) {
     var selectedOption by remember { mutableIntStateOf(0) }
-    var navBarSize by remember { mutableStateOf(0.dp)}
-    val density = LocalDensity.current
-
-    Box(){
         Scaffold(
-            modifier = Modifier
-                .height(120.dp)
-                .onGloballyPositioned { coordinates ->
-                    navBarSize = with(density) { coordinates.size.height.toDp() }
-                },
-
             bottomBar = {
-                BottomAppBar (
-                    containerColor = Color.White,
-                    tonalElevation = 8.dp
-                ){
+                BottomAppBar{
                     NavigationBarItem(
                         selected = selectedOption == 0,
                         onClick = { selectedOption = 0 },
                         icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                         label = { Text("Inicio") }
                     )
-                    Spacer(modifier = Modifier.weight(1f))
+                    //Spacer(modifier = Modifier.weight(1f))
+
+                    FloatingActionButton(
+                        onClick = { /* do something */ },
+                        containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+                    ) {
+                        Icon(Icons.Filled.Add, "Localized description")
+                    }
+
                     NavigationBarItem(
                         selected = selectedOption == 2,
                         onClick = { selectedOption = 2 },
@@ -85,46 +87,28 @@ fun MenuScreen() {
                     .padding(padding)
             ) {
                 when (selectedOption) {
-                    0 -> HomeScreen()
+                    0 -> HomeScreen(navController)
                     1 -> TicketsScreen()
-                    2 -> NotificationsScreen()
+                    2 -> NotificationsScreen(navController)
                 }
             }
 
         }
-
-        LargeFloatingActionButton (
-            onClick = { selectedOption = 1 },
-            shape = CircleShape,
-            containerColor = Color.White,
-            contentColor = Color.Black,
-            modifier = Modifier
-                .align(alignment = Alignment.BottomCenter)
-                .offset(y = (-navBarSize.value/1.5f).dp)
-                .statusBarsPadding()
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ){
-                Icon(Icons.Default.Create, contentDescription = "Editar",
-                    modifier = Modifier
-                        .padding(bottom = 4.dp))
-                Text("Editar")
-            }
-        }
-    }
 }
 
 
 
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavController) {
+    MainTecnicoScreen(navController)
 }
 
 @Composable
 fun TicketsScreen() {
+
 }
 
 @Composable
-fun NotificationsScreen() {
+fun NotificationsScreen(navController:NavController) {
+    TicketList(navController)
 }

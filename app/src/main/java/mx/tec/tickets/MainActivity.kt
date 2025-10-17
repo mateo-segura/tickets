@@ -7,7 +7,6 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.rememberNavController
 import mx.tec.chat.ChatScreen
 import mx.tec.tickets.navigation.AppNavigation
-import mx.tec.tickets.ui.screens.MainMesaScreen
 import mx.tec.tickets.ui.screens.VistaInteriorTicket
 import mx.tec.tickets.ui.screens.MainTecnicoScreen
 import mx.tec.tickets.ui.theme.TicketsTheme
@@ -18,11 +17,10 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             TicketsTheme {
-
-                // AppNavigation() // diagrama (componente ticket): https://drive.google.com/file/d/156gHLbHn6pczxFrlbUp2ROohhLyCS1jl/view?usp=sharing
+                 AppNavigation() // diagrama (componente ticket): https://drive.google.com/file/d/156gHLbHn6pczxFrlbUp2ROohhLyCS1jl/view?usp=sharing
                 // MainScreen() // AppBar archivos: https://drive.google.com/file/d/1UDDoKUqLj_I_v5XTkAVQWeb9VmkESt3I/view?usp=sharing
                 // VistaInteriorTicket()
-                MainTecnicoScreen()
+                //MainTecnicoScreen()
                 // ChatScreen()
                 // Comentario de Prueba parp probar el github UwU
 

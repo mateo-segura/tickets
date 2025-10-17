@@ -5,13 +5,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.navigation.NavController
 
 
 @Composable
-fun MainScreen() {
+fun MainScreen(navController: NavController) {
     var isLogged by remember {mutableStateOf(false)}
     if(isLogged)
-        MenuScreen()
+        navController.navigate("menuscreen")
     else
         LoginScreen() {
             isLogged=true
