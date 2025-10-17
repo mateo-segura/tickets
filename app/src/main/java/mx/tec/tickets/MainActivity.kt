@@ -19,10 +19,10 @@ class MainActivity : ComponentActivity() {
         setContent {
             TicketsTheme {
 
-                // AppNavigation() // diagrama (componente ticket): https://drive.google.com/file/d/156gHLbHn6pczxFrlbUp2ROohhLyCS1jl/view?usp=sharing
+                AppNavigation() // diagrama (componente ticket): https://drive.google.com/file/d/156gHLbHn6pczxFrlbUp2ROohhLyCS1jl/view?usp=sharing
                 // MainScreen() // AppBar archivos: https://drive.google.com/file/d/1UDDoKUqLj_I_v5XTkAVQWeb9VmkESt3I/view?usp=sharing
                 // VistaInteriorTicket()
-                VistaInteriorTicket()
+                // VistaInteriorTicket()
                 // ChatScreen()
                 // Comentario de Prueba parp probar el github UwU
 
