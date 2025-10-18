@@ -50,14 +50,16 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import mx.tec.tickets.navigation.AppNavigation
+import mx.tec.tickets.ui.TicketList
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
 // Vista principal tecnico
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainMesaScreen() {
+fun MainMesaScreen(navController: NavController,token: String,role: String) {
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
     val density = LocalDensity.current
@@ -85,9 +87,9 @@ fun MainMesaScreen() {
         ){
             Text (
                 modifier = Modifier
-                    .padding(16.dp)
-                    .padding(WindowInsets.statusBars.asPaddingValues()),
-                text = "Tickets ",
+                    .padding(16.dp),
+                        /*.padding(WindowInsets.statusBars.asPaddingValues()), causaba problemas con el scaffold de MesaMenuScreen.kt (falta arreglar) */
+                text = "Tickets: ${role} ",
                 style = MaterialTheme.typography.titleLarge.copy(
                     shadow = Shadow(
                         color = Color.Black.copy(alpha = 0.3f),
@@ -187,7 +189,8 @@ fun MainMesaScreen() {
 
             // Espacio de tickets Mis Tickets
             Column {
-                AppNavigation()
+                // AppNavigation() este es el controlador de navegacion
+                TicketList(navController) // esta es la ruta para la lista de tickets
             }
 
         }
@@ -225,88 +228,88 @@ fun MainMesaScreen() {
         // Spacer(modifier = Modifier.weight(1f))
 
         // barra de navegacion
-
-        Box (
-            modifier = Modifier
-                .fillMaxWidth()
-                .drawColoredShadow(
-                    color = Color.Black,           // Shadow color
-                    alpha = 0.25f,                 // Opacity of the shadow
-                    borderRadius = 8.dp,           // Match your box corner radius
-                    shadowRadius = 12.dp,          // Blur radius of the shadow
-                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                    offsetX = 0.dp                 // Horizontal offset (centered)
-                )
-                .requiredHeightIn(max = 120.dp)
-                //.height(100.dp)
-                .background(Color.White)
-                .onGloballyPositioned { coordinates ->
-                    navBarSize = with(density) { coordinates.size.height.toDp() }
-                },
-            contentAlignment = Alignment.Center
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ){
-
-                Spacer(modifier = Modifier.weight(1f))
-
-                Column (
-                    Modifier.size(notifIcon),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    IconButton(onClick = { /* TODO: Handle Home */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Home,
-                            contentDescription = "Inicio",
-                            tint = Color.Black
-                        )
-                    }
-                    Text("Inicio")
-                }
-
-                Spacer(modifier = Modifier.weight(3f))
-
-                Column (
-                    Modifier.onGloballyPositioned { coordinates ->
-                        notifIcon = with(density) { coordinates.size.height.toDp() }
-                    },
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    IconButton(onClick = { /* TODO: Handle Settings */ }) {
-                        Icon(
-                            imageVector = Icons.Default.Notifications,
-                            contentDescription = "Notifications",
-                            tint = Color.Black
-                        )
-                    }
-                    Text("Notificaciones")
-                }
-
-                Spacer(modifier = Modifier.weight(1f))
-            }
-
-            LargeFloatingActionButton (
-                onClick = { /* TODO: Handle Search */ },
-                shape = CircleShape,
-                containerColor = Color.White,
-                contentColor = Color.Black,
-                modifier = Modifier
-                    .offset(y = (-navBarSize.value/1.5f).dp)
-                    .statusBarsPadding()
-                    .requiredHeightIn(min = 100.dp)
-            ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ){
-                    Icon(Icons.Default.AddCircle, contentDescription = "Editar",
-                        modifier = Modifier
-                            .padding(bottom = 4.dp))
-                    Text("Crear")
-                }
-            }
-        }
+        // /*lo comenté porque el appbar está en MesaMenuScreen.kt*/
+//        Box (
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .drawColoredShadow(
+//                    color = Color.Black,           // Shadow color
+//                    alpha = 0.25f,                 // Opacity of the shadow
+//                    borderRadius = 8.dp,           // Match your box corner radius
+//                    shadowRadius = 12.dp,          // Blur radius of the shadow
+//                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
+//                    offsetX = 0.dp                 // Horizontal offset (centered)
+//                )
+//                .requiredHeightIn(max = 120.dp)
+//                //.height(100.dp)
+//                .background(Color.White)
+//                .onGloballyPositioned { coordinates ->
+//                    navBarSize = with(density) { coordinates.size.height.toDp() }
+//                },
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Row(
+//                modifier = Modifier.fillMaxWidth(),
+//                horizontalArrangement = Arrangement.SpaceEvenly,
+//                verticalAlignment = Alignment.CenterVertically
+//            ){
+//
+//                Spacer(modifier = Modifier.weight(1f))
+//
+//                Column (
+//                    Modifier.size(notifIcon),
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ){
+//                    IconButton(onClick = { /* TODO: Handle Home */ }) {
+//                        Icon(
+//                            imageVector = Icons.Default.Home,
+//                            contentDescription = "Inicio",
+//                            tint = Color.Black
+//                        )
+//                    }
+//                    Text("Inicio")
+//                }
+//
+//                Spacer(modifier = Modifier.weight(3f))
+//
+//                Column (
+//                    Modifier.onGloballyPositioned { coordinates ->
+//                        notifIcon = with(density) { coordinates.size.height.toDp() }
+//                    },
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ){
+//                    IconButton(onClick = { /* TODO: Handle Settings */ }) {
+//                        Icon(
+//                            imageVector = Icons.Default.Notifications,
+//                            contentDescription = "Notifications",
+//                            tint = Color.Black
+//                        )
+//                    }
+//                    Text("Notificaciones")
+//                }
+//
+//                Spacer(modifier = Modifier.weight(1f))
+//            }
+//
+//            LargeFloatingActionButton (
+//                onClick = { /* TODO: Handle Search */ },
+//                shape = CircleShape,
+//                containerColor = Color.White,
+//                contentColor = Color.Black,
+//                modifier = Modifier
+//                    .offset(y = (-navBarSize.value/1.5f).dp)
+//                    .statusBarsPadding()
+//                    .requiredHeightIn(min = 100.dp)
+//            ) {
+//                Column(
+//                    horizontalAlignment = Alignment.CenterHorizontally
+//                ){
+//                    Icon(Icons.Default.AddCircle, contentDescription = "Editar",
+//                        modifier = Modifier
+//                            .padding(bottom = 4.dp))
+//                    Text("Crear")
+//                }
+//            }
+//        }
     }
 }

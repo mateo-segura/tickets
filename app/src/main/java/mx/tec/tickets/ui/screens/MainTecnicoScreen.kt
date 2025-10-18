@@ -62,7 +62,7 @@ import mx.tec.tickets.ui.theme.drawColoredShadow
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainTecnicoScreen(navController: NavController) {
+fun MainTecnicoScreen(navController: NavController,token: String,role: String) {
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
     var showSheet by remember { mutableStateOf(false) }
@@ -95,8 +95,8 @@ fun MainTecnicoScreen(navController: NavController) {
             Text (
                 modifier = Modifier
                     .padding(16.dp),
-                    /*.padding(WindowInsets.statusBars.asPaddingValues()), causaba problemas con el scaffold de MenuScreen.kt https://drive.google.com/file/d/1IXaWoe8pqS4JKnhNISbMsP_zsDsrOBsa/view?usp=sharing (falta arreglar) */
-                text = "Mis Tickets",
+                    /*.padding(WindowInsets.statusBars.asPaddingValues()), causaba problemas con el scaffold de TecnicoMenuScreen.kt https://drive.google.com/file/d/1IXaWoe8pqS4JKnhNISbMsP_zsDsrOBsa/view?usp=sharing (falta arreglar) */
+                text = "Mis Tickets: ${role}",
                 style = MaterialTheme.typography.titleLarge.copy(
                     shadow = Shadow(
                         color = Color.Black.copy(alpha = 0.3f),
@@ -263,7 +263,7 @@ fun MainTecnicoScreen(navController: NavController) {
 
          */
 
-        /*lo comenté porque el appbar está en MenuScreen.kt*/
+        /*lo comenté porque el appbar está en TecnicoMenuScreen.kt*/
 //        Box (
 //            modifier = Modifier
 //                .fillMaxWidth()

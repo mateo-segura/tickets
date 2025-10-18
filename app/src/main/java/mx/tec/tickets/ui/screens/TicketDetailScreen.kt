@@ -270,7 +270,7 @@
                         Text (
                             modifier = Modifier
                                 .padding(16.dp),
-                                    /*.padding(WindowInsets.statusBars.asPaddingValues()), causaba problemas con el scaffold de MenuScreen.kt (falta arreglar) */
+                                    /*.padding(WindowInsets.statusBars.asPaddingValues()), causaba problemas con el scaffold de TecnicoMenuScreen.kt (falta arreglar) */
                             text = "Edit",
                             style = MaterialTheme.typography.titleLarge.copy(
                                 shadow = Shadow(

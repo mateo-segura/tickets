@@ -11,7 +11,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import mx.tec.tickets.ui.TicketList
 import mx.tec.tickets.ui.screens.MainScreen
-import mx.tec.tickets.ui.screens.MenuScreen
+import mx.tec.tickets.ui.screens.MesaMenuScreen
+import mx.tec.tickets.ui.screens.TecnicoMenuScreen
 import mx.tec.tickets.ui.screens.TicketDetailScreen
 
 @Composable
@@ -26,8 +27,27 @@ fun AppNavigation() {
         composable("mainscreen"){
             MainScreen(navController)
         }
-        composable("menuscreen"){
-            MenuScreen(navController)
+        composable(
+            route = "tecnicomenuscreen?token={token}&role={role}",
+            arguments = listOf(
+                navArgument("token") { defaultValue = ""; type = NavType.StringType },
+                navArgument("role") { defaultValue = ""; type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            val role = backStackEntry.arguments?.getString("role") ?: ""
+            TecnicoMenuScreen(navController, token, role)
+        }
+        composable(
+            route = "mesamenuscreen?token={token}&role={role}",
+            arguments = listOf(
+                navArgument("token") { defaultValue = ""; type = NavType.StringType },
+                navArgument("role") { defaultValue = ""; type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            val role = backStackEntry.arguments?.getString("role") ?: ""
+            MesaMenuScreen(navController, token, role)
         }
         composable("lista" /*id*/) {
             TicketList(navController /*cada componente necesita navcontroller*/)
@@ -35,14 +55,6 @@ fun AppNavigation() {
         composable(
             route = "detalle/{ticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
             arguments = listOf(navArgument("ticket") { type = NavType.StringType }),
-            //enterTransition = { slideInHorizontally(initialOffsetX = { it }) }, // desde la derecha, desde otra pantalla
-            //exitTransition = { slideOutHorizontally(targetOffsetX = { -it }) },   // hacia la izquierda
-            //enterTransition = { fadeIn(animationSpec = tween(500)) },
-            //exitTransition = { fadeOut(animationSpec = tween(500)) },
-            //enterTransition = { expandIn(expandFrom = Alignment.Center) },
-            //exitTransition = { shrinkOut(shrinkTowards = Alignment.Center) },
-            //popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) }, // desde popBackStack
-            //popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
         ) { backStackEntry ->
             val ticket = backStackEntry.arguments?.getString("ticket")
             TicketDetailScreen(ticket = ticket ?: "", navController)

@@ -54,6 +54,7 @@ dependencies {
     implementation(libs.volley)
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.room.ktx)
+    implementation(libs.androidx.ui.text)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
