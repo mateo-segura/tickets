@@ -55,6 +55,8 @@ dependencies {
     implementation(libs.logging.interceptor)
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.ui.text)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

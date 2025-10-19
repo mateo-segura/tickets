@@ -218,7 +218,7 @@ fun UploadButton(
     }
 
     Button(onClick = { filePicker.launch("*/*") }) {
-        Text(text = "📎 Archivo")
+        Text(text = "📎")
     }
 }
 

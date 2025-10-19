@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import mx.tec.tickets.ui.screens.downloadFile
 import mx.tec.tickets.ui.screens.UploadButton
 import mx.tec.tickets.ui.screens.downloadFile
@@ -36,7 +37,7 @@ data class Message(
     val author: String,
     val body: String,
     val isUser: Boolean = false,
-    val fileId: String? = null // 👈 si es mensaje de archivo
+    val fileId: String? = null //
 )
 
 @Composable
@@ -117,8 +118,8 @@ fun Conversation(messages: List<Message>, modifier: Modifier = Modifier) {
 @Composable
 fun ChatScreen() {
     val messages = remember { SampleData.conversationSample.toMutableStateList() }
-    //var messages by remember { mutableStateOf(SampleData.conversationSample) }
     var currentText by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope() // ✅ se agrega esta línea
 
     Scaffold(
         modifier = Modifier.padding(WindowInsets.navigationBars.asPaddingValues()),
@@ -132,7 +133,7 @@ fun ChatScreen() {
                     value = currentText,
                     onValueChange = { currentText = it },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("Escribe tu mensage...") }
+                    placeholder = { Text("Escribe tu mensaje...") }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
                 UploadButton(
@@ -143,7 +144,7 @@ fun ChatScreen() {
                                 author = "You",
                                 body = "📎 $fileName",
                                 isUser = true,
-                                fileId = "11" //  cambia esto por el id real si tu backend lo devuelve
+                                fileId = "11"
                             )
                         )
                     }
@@ -152,7 +153,34 @@ fun ChatScreen() {
                     onClick = {
                         if (currentText.isNotBlank()) {
                             messages.add(0, Message("You", currentText, isUser = true))
+                            val textToSend = currentText
                             currentText = ""
+
+
+                            coroutineScope.launch {
+                                val api = mx.tec.tickets.model.ApiClient
+                                    .retrofit
+                                    .create(mx.tec.tickets.model.ChatApi::class.java)
+
+                                try {
+                                    val response = api.sendMessage(
+                                        mx.tec.tickets.model.MessageRequest(
+                                            ticket_id = 1,
+                                            sender_user_id = 2,
+                                            body = textToSend
+                                        )
+                                    )
+
+                                    if (response.isSuccessful) {
+                                        println("Mensaje enviado correctamente")
+                                    } else {
+                                        println("Error del servidor: ${response.code()}")
+                                    }
+
+                                } catch (e: Exception) {
+                                    println("Error de red: ${e.message}")
+                                }
+                            }
                         }
                     }
                 ) {
@@ -169,6 +197,7 @@ fun ChatScreen() {
         )
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
