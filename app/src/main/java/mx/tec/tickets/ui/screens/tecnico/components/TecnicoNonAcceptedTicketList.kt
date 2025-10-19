@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens.tecnico
+package mx.tec.tickets.ui.screens.tecnico.components
 
 import android.content.Context
 import android.util.Log
@@ -22,12 +22,12 @@ import mx.tec.tickets.model.NonAcceptedTicket
 import org.json.JSONArray
 
 @Composable
-fun TecnicoNonAcceptedTicketList(navController: NavController, userID: Int) {
+fun TecnicoNonAcceptedTicketList(navController: NavController, userID: Int,token:String) {
     val context = LocalContext.current
     var nonAceptedTickets by remember { mutableStateOf(listOf<NonAcceptedTicket>()) }
     println("userID from ticketlist ${userID}")
     LaunchedEffect(Unit) {
-        fetchNonAceptedTickets(context, userID) { fetchedTickets ->
+        fetchNonAceptedTickets(context, userID,token) { fetchedTickets ->
             nonAceptedTickets = fetchedTickets
         }
     }
@@ -47,6 +47,7 @@ fun TecnicoNonAcceptedTicketList(navController: NavController, userID: Int) {
 fun fetchNonAceptedTickets(
     context: Context,
     userID: Int,
+    token: String,
     onResult: (List<NonAcceptedTicket>) -> Unit
 ) {
     val nonAcceptedTickets = mutableListOf<NonAcceptedTicket>()
@@ -72,10 +73,13 @@ fun fetchNonAceptedTickets(
     val errorListener = Response.ErrorListener { error ->
         Log.e("VolleyError", error.message.toString())
     }
-    val request = JsonArrayRequest(
-        metodo, url,
-        null, listener, errorListener
-    )
+    val request = object : JsonArrayRequest(metodo, url, null, listener, errorListener) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val headers = HashMap<String, String>()
+            headers["Authorization"] = "Bearer $token" // Ajusta si tu backend usa otro formato
+            return headers
+        }
+    }
 
     queue.add(request)
 }

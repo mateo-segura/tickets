@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens.tecnico
+package mx.tec.tickets.ui.screens.tecnico.components
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -28,7 +28,7 @@ import com.google.gson.Gson
 import mx.tec.tickets.model.NonAcceptedTicket
 
 @Composable
-fun TecnicoNonAcceptedTicketCard(nonAcceptedTicket: NonAcceptedTicket, navController: NavController,userID:Int) {
+fun TecnicoAcceptedTicketCard(nonAcceptedTicket: NonAcceptedTicket, navController: NavController,userID:Int) {
     val padding = 10.dp
     val fontSizeNormal = 11.sp
     val fontSizeTitle = 14.sp
@@ -39,7 +39,7 @@ fun TecnicoNonAcceptedTicketCard(nonAcceptedTicket: NonAcceptedTicket, navContro
             .padding(10.dp)
             .clickable {
                 val jsonTicket = Gson().toJson(nonAcceptedTicket)
-                navController.navigate("detail/${jsonTicket}")
+                navController.navigate("detailaccepted/${jsonTicket}")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         colors = CardDefaults.cardColors(

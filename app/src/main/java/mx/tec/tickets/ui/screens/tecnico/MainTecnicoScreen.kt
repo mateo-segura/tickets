@@ -36,6 +36,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketList
+import mx.tec.tickets.ui.screens.tecnico.components.TecnicoNonAcceptedTicketList
 import mx.tec.tickets.ui.utils.TecnicoTicketList
 import mx.tec.tickets.ui.theme.BottomSheetCreate
 import mx.tec.tickets.ui.theme.BottomSheetNew
@@ -44,7 +46,7 @@ import mx.tec.tickets.ui.theme.drawColoredShadow
 
 // Vista principal tecnico
 
-@Preview(showBackground = true, showSystemUi = true)
+//@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun MainTecnicoScreen(navController: NavController,token: String,role: String,userID: Int) {
     var navBarSize by remember { mutableStateOf(0.dp)}
@@ -178,10 +180,9 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
                 }
             }
 
-            // Espacio de tickets Mis Tickets
+            // Espacio de tickets Mis Tickets (Aceptados)
             Column () {
-                 // AppNavigation() este es el controlador de navegacion
-                TecnicoTicketList(navController,userID) // esta es la ruta para la lista de tickets
+                TecnicoAcceptedTicketList(navController, userID,token)
             }
 
         }
@@ -215,15 +216,13 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
             )
         }
 
-        // Espacio de tickets Nuevos Tickets
+        // Espacio de tickets Nuevos Tickets (No aceptados)
 
         Column (
             modifier = Modifier
                 .weight(1f)
         ){
-            // AppNavigation() este es el controlador de navegacion
-            //TecnicoTicketList(navController,userID) // esta es la ruta para la lista de tickets
-            TecnicoNonAcceptedTicketList(navController,userID)
+            TecnicoNonAcceptedTicketList(navController, userID,token)
         }
 
         // Barra de navegacion

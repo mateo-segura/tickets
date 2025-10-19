@@ -1,5 +1,6 @@
 package mx.tec.tickets.model
 
+//todo: refactorizar a Ticket
 data class NonAcceptedTicket (
     val ticketID: Int,
     val title: String,
