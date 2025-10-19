@@ -25,7 +25,7 @@ import org.json.JSONObject
 
 
 @Composable
-fun LoginScreen(onLoginSuccess: (jwtToken: String, role: String) -> Unit) { /*/interfaz: pasar del hijo al padre, { isLogged = true } se pasa desde el padre como onLoginSuccess()*/
+fun LoginScreen(onLoginSuccess: (jwtToken: String, role: String,userid:Int) -> Unit) { /*/interfaz: pasar del hijo al padre, { isLogged = true } se pasa desde el padre como onLoginSuccess()*/
     var usuario by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -54,8 +54,8 @@ fun LoginScreen(onLoginSuccess: (jwtToken: String, role: String) -> Unit) { /*/i
                 jsonObject.put("email", usuario)
                 jsonObject.put("password", password)
                 //SI no hubo error: onLoginSuccess() (pasar role y jwt)
-                handleLogin(context,jsonObject){jwtToken, role ->
-                    onLoginSuccess(jwtToken, role)
+                handleLogin(context,jsonObject){jwtToken, role,userid ->
+                    onLoginSuccess(jwtToken, role,userid)
                 }
                 // si hubo error mostrar error
             }
@@ -64,7 +64,7 @@ fun LoginScreen(onLoginSuccess: (jwtToken: String, role: String) -> Unit) { /*/i
         }
     }
 }
-fun handleLogin(context: Context,jsonObject: JSONObject,    onSuccess: (jwtToken: String, role: String) -> Unit){
+fun handleLogin(context: Context,jsonObject: JSONObject,    onSuccess: (jwtToken: String, role: String,userid:Int) -> Unit){
     //https://escapesequence89.medium.com/volley-http-for-android-60999099ddda
     val queue = Volley.newRequestQueue(context)
     val url = "http://10.0.2.2:3000/login"
@@ -74,7 +74,8 @@ fun handleLogin(context: Context,jsonObject: JSONObject,    onSuccess: (jwtToken
         try{
             val jwtToken = response.getString("token")
             val role = response.getString("role");
-            onSuccess(jwtToken, role)
+            val userid=response.getInt("id")
+            onSuccess(jwtToken, role,userid)
         } catch (e:Exception){
             Log.e("Login", "Error al parsear respuesta", e)
         }

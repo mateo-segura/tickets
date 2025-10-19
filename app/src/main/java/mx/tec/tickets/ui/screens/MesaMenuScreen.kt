@@ -87,5 +87,4 @@ fun MesaTicketsScreen() {
 
 @Composable
 fun MesaNotificationsScreen(navController:NavController) {
-    TicketList(navController)
 }

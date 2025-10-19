@@ -190,7 +190,7 @@ fun MainMesaScreen(navController: NavController,token: String,role: String) {
             // Espacio de tickets Mis Tickets
             Column {
                 // AppNavigation() este es el controlador de navegacion
-                TicketList(navController) // esta es la ruta para la lista de tickets
+                //TicketList(navController) // esta es la ruta para la lista de tickets
             }
 
         }

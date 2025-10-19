@@ -28,7 +28,7 @@ import mx.tec.tickets.ui.TicketList
 //viewmodel area compartida de todas las pantallas
 @Preview
 @Composable
-fun TecnicoMenuScreen(navController: NavController,token: String,role: String) {
+fun TecnicoMenuScreen(navController: NavController,token: String,role: String,userID: Int) {
     var selectedOption by remember { mutableIntStateOf(0) }
         Scaffold(
             bottomBar = {
@@ -64,7 +64,7 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String) {
                     .padding(padding)
             ) {
                 when (selectedOption) {
-                    0 -> HomeScreen(navController,token,role)
+                    0 -> HomeScreen(navController,token,role,userID)
                     1 -> TicketsScreen()
                     2 -> NotificationsScreen(navController)
                 }
@@ -76,8 +76,8 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String) {
 
 
 @Composable
-fun HomeScreen(navController: NavController,token: String,role: String) {
-    MainTecnicoScreen(navController,token,role)
+fun HomeScreen(navController: NavController,token: String,role: String,userID: Int) {
+    MainTecnicoScreen(navController,token,role,userID)
 }
 
 @Composable
@@ -87,5 +87,4 @@ fun TicketsScreen() {
 
 @Composable
 fun NotificationsScreen(navController:NavController) {
-    TicketList(navController)
 }

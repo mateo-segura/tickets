@@ -23,10 +23,10 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 @Composable
-fun TicketList(navController: NavController) {
+fun TicketList(navController: NavController,userID:Int) {
     val context = LocalContext.current
     var tickets by remember { mutableStateOf(listOf<Ticket>()) }
-
+    println("userID from ticketlist ${userID}")
     LaunchedEffect(Unit) {
         fetchTickets(context) { fetchedTickets ->
             tickets = fetchedTickets

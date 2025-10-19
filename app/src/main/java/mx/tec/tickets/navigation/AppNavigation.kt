@@ -28,15 +28,17 @@ fun AppNavigation() {
             MainScreen(navController)
         }
         composable(
-            route = "tecnicomenuscreen?token={token}&role={role}",
+            route = "tecnicomenuscreen?token={token}&role={role}&userid={userid}",
             arguments = listOf(
                 navArgument("token") { defaultValue = ""; type = NavType.StringType },
-                navArgument("role") { defaultValue = ""; type = NavType.StringType }
+                navArgument("role") { defaultValue = ""; type = NavType.StringType },
+                        navArgument("userid") { defaultValue = 0; type = NavType.IntType }
             )
         ) { backStackEntry ->
             val token = backStackEntry.arguments?.getString("token") ?: ""
             val role = backStackEntry.arguments?.getString("role") ?: ""
-            TecnicoMenuScreen(navController, token, role)
+            val userID = backStackEntry.arguments?.getInt("userid") ?: 0
+            TecnicoMenuScreen(navController, token, role,userID)
         }
         composable(
             route = "mesamenuscreen?token={token}&role={role}",
@@ -49,9 +51,9 @@ fun AppNavigation() {
             val role = backStackEntry.arguments?.getString("role") ?: ""
             MesaMenuScreen(navController, token, role)
         }
-        composable("lista" /*id*/) {
-            TicketList(navController /*cada componente necesita navcontroller*/)
-        }
+//        composable("lista" /*id*/) {
+//            TicketList(navController /*cada componente necesita navcontroller*/)
+//        }
         composable(
             route = "detalle/{ticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
             arguments = listOf(navArgument("ticket") { type = NavType.StringType }),

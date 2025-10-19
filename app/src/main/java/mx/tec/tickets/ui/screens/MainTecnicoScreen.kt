@@ -62,7 +62,7 @@ import mx.tec.tickets.ui.theme.drawColoredShadow
 
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainTecnicoScreen(navController: NavController,token: String,role: String) {
+fun MainTecnicoScreen(navController: NavController,token: String,role: String,userID: Int) {
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
     var showSheet by remember { mutableStateOf(false) }
@@ -197,7 +197,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String) {
             // Espacio de tickets Mis Tickets
             Column () {
                  // AppNavigation() este es el controlador de navegacion
-                TicketList(navController) // esta es la ruta para la lista de tickets
+                TicketList(navController,userID) // esta es la ruta para la lista de tickets
             }
 
         }
@@ -238,7 +238,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String) {
                 .weight(1f)
         ){
             // AppNavigation() este es el controlador de navegacion
-            TicketList(navController) // esta es la ruta para la lista de tickets
+            TicketList(navController,userID) // esta es la ruta para la lista de tickets
         }
 
         // Barra de navegacion
