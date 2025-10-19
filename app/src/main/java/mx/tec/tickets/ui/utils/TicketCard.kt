@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui
+package mx.tec.tickets.ui.utils
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

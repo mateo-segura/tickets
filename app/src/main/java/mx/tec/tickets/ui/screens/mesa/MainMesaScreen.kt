@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens
+package mx.tec.tickets.ui.screens.mesa
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement

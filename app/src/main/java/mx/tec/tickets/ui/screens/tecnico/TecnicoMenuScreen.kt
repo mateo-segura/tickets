@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens
+package mx.tec.tickets.ui.screens.tecnico
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -76,7 +76,7 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String,us
 
 @Composable
 fun HomeScreen(navController: NavController,token: String,role: String,userID: Int) {
-    MainTecnicoScreen(navController,token,role,userID)
+    MainTecnicoScreen(navController, token, role, userID)
 }
 
 @Composable

@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens
+package mx.tec.tickets.ui.screens.mesa
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -76,7 +76,7 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String) {
 
 @Composable
 fun MesaHomeScreen(navController: NavController,token: String,role: String) {
-    MainMesaScreen(navController,token,role)
+    MainMesaScreen(navController, token, role)
 }
 
 @Composable

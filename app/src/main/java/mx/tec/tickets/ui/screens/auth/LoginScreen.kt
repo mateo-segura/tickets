@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens
+package mx.tec.tickets.ui.screens.auth
 
 import android.content.Context
 import android.util.Log

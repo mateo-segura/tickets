@@ -42,18 +42,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.android.volley.Request
-import com.android.volley.Response
-import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.JsonObjectRequest
 import com.android.volley.toolbox.Volley
 import mx.tec.chat.ChatScreen
 import mx.tec.tickets.model.Ticket
-import mx.tec.tickets.ui.getIntOrNull
 import mx.tec.tickets.ui.theme.drawColoredShadow
-import org.json.JSONArray
 
 // Vista de interior del ticket
 

@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens
+package mx.tec.tickets.ui.screens.tecnico
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -36,7 +36,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import mx.tec.tickets.ui.TecnicoTicketList
+import mx.tec.tickets.ui.utils.TecnicoTicketList
 import mx.tec.tickets.ui.theme.BottomSheetCreate
 import mx.tec.tickets.ui.theme.BottomSheetNew
 import mx.tec.tickets.ui.theme.BottomSheetTickets
@@ -222,7 +222,8 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
                 .weight(1f)
         ){
             // AppNavigation() este es el controlador de navegacion
-            TecnicoTicketList(navController,userID) // esta es la ruta para la lista de tickets
+            //TecnicoTicketList(navController,userID) // esta es la ruta para la lista de tickets
+            TecnicoNonAcceptedTicketList(navController,userID)
         }
 
         // Barra de navegacion

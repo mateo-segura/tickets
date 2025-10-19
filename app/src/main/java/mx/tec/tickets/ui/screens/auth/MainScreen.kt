@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens
+package mx.tec.tickets.ui.screens.auth
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,10 +25,10 @@ fun MainScreen(navController: NavController) {
             navController.navigate("mesamenuscreen?token=$jwtToken&role=$role")
     }
     else{
-        LoginScreen { token, userRole,userid ->
+        LoginScreen { token, userRole, userid ->
             jwtToken = token
             role = userRole
-            userID=userid
+            userID = userid
             isLogged = true
         }
     }

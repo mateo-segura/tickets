@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui
+package mx.tec.tickets.ui.screens.tecnico
 
 import android.content.Context
 import android.util.Log
@@ -18,18 +18,17 @@ import com.android.volley.Request
 import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
-import mx.tec.tickets.model.Ticket
+import mx.tec.tickets.model.NonAcceptedTicket
 import org.json.JSONArray
-import org.json.JSONObject
 
 @Composable
-fun TecnicoTicketList(navController: NavController, userID:Int) {
+fun TecnicoNonAcceptedTicketList(navController: NavController, userID: Int) {
     val context = LocalContext.current
-    var tickets by remember { mutableStateOf(listOf<Ticket>()) }
+    var nonAceptedTickets by remember { mutableStateOf(listOf<NonAcceptedTicket>()) }
     println("userID from ticketlist ${userID}")
     LaunchedEffect(Unit) {
-        fetchTickets(context) { fetchedTickets ->
-            tickets = fetchedTickets
+        fetchNonAceptedTickets(context, userID) { fetchedTickets ->
+            nonAceptedTickets = fetchedTickets
         }
     }
     LazyColumn(
@@ -38,33 +37,37 @@ fun TecnicoTicketList(navController: NavController, userID:Int) {
         //.statusBarsPadding()
         // Status bars padding estaba causando padding conflictivo
     ) {
-        items(tickets) { ticket ->
-            TicketCard(ticket, navController)
+        items(nonAceptedTickets) { ticket ->
+            TecnicoNonAcceptedTicketCard(ticket, navController, userID)
         }
     }
 }
 
-//Consumir el API, Recibe: ?, Devuelve: List<User>
-fun fetchTickets(context: Context, onResult: (List<Ticket>) -> Unit) {
-    val tickets = mutableListOf<Ticket>()
+
+fun fetchNonAceptedTickets(
+    context: Context,
+    userID: Int,
+    onResult: (List<NonAcceptedTicket>) -> Unit
+) {
+    val nonAcceptedTickets = mutableListOf<NonAcceptedTicket>()
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/tickets"
+    val url = "http://10.0.2.2:3000/tickets/nonAceptedTickets/${userID}"
     val metodo = Request.Method.GET
     val listener = Response.Listener<JSONArray> { response ->
         for (i in 0 until response.length()) {
-            val ticket = Ticket(
+            val nonAcceptedTicket = NonAcceptedTicket(
+                response.getJSONObject(i).getInt("Ticket_ID"),
                 response.getJSONObject(i).getString("title"),
-                response.getJSONObject(i).getString("priority"),
-                response.getJSONObject(i)
-                    .getIntOrNull("assigned_to"), //todo: assignedTo puede ser nulo? (en la base de datos hay uno null)
-                response.getJSONObject(i).getString("category"),
-                response.getJSONObject(i).getString("created_at"),
                 response.getJSONObject(i).getString("description"),
-
-                )
-            tickets.add(ticket)
+                response.getJSONObject(i).getString("category"),
+                response.getJSONObject(i).getString("priority"),
+                response.getJSONObject(i).getString("status"),
+                response.getJSONObject(i).getInt("acepted"),
+                response.getJSONObject(i).getString("created_at")
+            )
+            nonAcceptedTickets.add(nonAcceptedTicket)
         }
-        onResult(tickets)
+        onResult(nonAcceptedTickets)
     }
     val errorListener = Response.ErrorListener { error ->
         Log.e("VolleyError", error.message.toString())
@@ -73,8 +76,6 @@ fun fetchTickets(context: Context, onResult: (List<Ticket>) -> Unit) {
         metodo, url,
         null, listener, errorListener
     )
+
     queue.add(request)
 }
-
-fun JSONObject.getIntOrNull(key: String): Int? =
-    if (isNull(key)) null else getInt(key)

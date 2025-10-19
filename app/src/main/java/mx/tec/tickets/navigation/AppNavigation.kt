@@ -6,10 +6,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import mx.tec.tickets.ui.screens.MainScreen
-import mx.tec.tickets.ui.screens.MesaMenuScreen
-import mx.tec.tickets.ui.screens.TecnicoMenuScreen
-import mx.tec.tickets.ui.screens.TicketDetailScreen
+import mx.tec.tickets.ui.screens.auth.MainScreen
+import mx.tec.tickets.ui.screens.mesa.MesaMenuScreen
+import mx.tec.tickets.ui.screens.tecnico.TecnicoMenuScreen
+import mx.tec.tickets.ui.screens.tecnico.TecnicoNonAcceptedTicketDetail
+import mx.tec.tickets.ui.utils.TicketDetailScreen
 
 @Composable
 fun AppNavigation() {
@@ -56,6 +57,13 @@ fun AppNavigation() {
         ) { backStackEntry ->
             val ticket = backStackEntry.arguments?.getString("ticket")
             TicketDetailScreen(ticket = ticket ?: "", navController)
+        }
+        composable(
+            route = "detail/{nonacceptedticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
+            arguments = listOf(navArgument("nonacceptedticket") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val nonacceptedticket = backStackEntry.arguments?.getString("nonacceptedticket")
+            TecnicoNonAcceptedTicketDetail(nonacceptedticket = nonacceptedticket ?: "", navController)
         }
     }
 }
