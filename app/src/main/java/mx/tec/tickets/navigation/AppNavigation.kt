@@ -1,15 +1,11 @@
 package mx.tec.tickets.navigation
 
-import androidx.compose.animation.expandIn
-import androidx.compose.animation.shrinkOut
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import mx.tec.tickets.ui.TicketList
 import mx.tec.tickets.ui.screens.MainScreen
 import mx.tec.tickets.ui.screens.MesaMenuScreen
 import mx.tec.tickets.ui.screens.TecnicoMenuScreen
@@ -52,7 +48,7 @@ fun AppNavigation() {
             MesaMenuScreen(navController, token, role)
         }
 //        composable("lista" /*id*/) {
-//            TicketList(navController /*cada componente necesita navcontroller*/)
+//            TecnicoTicketList(navController /*cada componente necesita navcontroller*/)
 //        }
         composable(
             route = "detalle/{ticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json

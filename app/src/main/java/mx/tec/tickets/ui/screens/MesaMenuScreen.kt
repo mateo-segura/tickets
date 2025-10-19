@@ -23,7 +23,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
-import mx.tec.tickets.ui.TicketList
 
 //viewmodel area compartida de todas las pantallas
 @Preview
