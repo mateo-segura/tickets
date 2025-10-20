@@ -40,6 +40,7 @@ data class Message(
     val fileId: String? = null //
 )
 
+
 @Composable
 fun MessageCard(msg: Message) {
     val contexto = LocalContext.current
@@ -116,10 +117,111 @@ fun Conversation(messages: List<Message>, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun ChatScreen(ticketId: Int = 1, userId: Int = 2) {
+
+    val messages = remember { mutableStateListOf<Message>() }
+    var currentText by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+
+    // Cargar mensajes al inicio
+    LaunchedEffect(ticketId) {
+
+        val api = mx.tec.tickets.model.ApiClient
+            .retrofit
+            .create(mx.tec.tickets.model.ChatApi::class.java)
+
+        try {
+            val response = api.getMessagesByTicket(ticketId)
+            if (response.isSuccessful) {
+                val messageList = response.body().orEmpty()
+                messages.clear()
+                messages.addAll(
+                    messageList.map {
+                        Message(
+                            author = if (it.sender_user_id == userId) "Tú" else "Agente",
+                            body = it.body,
+                            isUser = it.sender_user_id == userId
+                        )
+                    }.reversed() // Para mostrar de más antiguo a más nuevo
+                )
+            } else {
+                println("Error al obtener mensajes: ${response.code()}")
+            }
+        } catch (e: Exception) {
+            println("Error de red: ${e.message}")
+        }
+    }
+
+    // UI del chat
+    Scaffold(
+        modifier = Modifier.padding(WindowInsets.navigationBars.asPaddingValues()),
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                TextField(
+                    value = currentText,
+                    onValueChange = { currentText = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Escribe tu mensaje...") }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = {
+                        if (currentText.isNotBlank()) {
+                            val textToSend = currentText
+                            currentText = ""
+
+                            // Mostrar mensaje localmente
+                            messages.add(0, Message("Tú", textToSend, isUser = true))
+
+                            // Enviar mensaje al servidor
+                            coroutineScope.launch {
+                                val api = mx.tec.tickets.model.ApiClient
+                                    .retrofit
+                                    .create(mx.tec.tickets.model.ChatApi::class.java)
+
+                                try {
+                                    val response = api.sendMessage(
+                                        mx.tec.tickets.model.MessageRequest(
+                                            ticket_id = ticketId,
+                                            sender_user_id = userId,
+                                            body = textToSend
+                                        )
+                                    )
+
+                                    if (!response.isSuccessful) {
+                                        println("Error al enviar mensaje: ${response.code()}")
+                                    }
+                                } catch (e: Exception) {
+                                    println("Error de red: ${e.message}")
+                                }
+                            }
+                        }
+                    }
+                ) {
+                    Text("Enviar")
+                }
+            }
+        }
+    ) { paddingValues ->
+        Conversation(
+            messages = messages,
+            modifier = Modifier
+                .padding(bottom = paddingValues.calculateBottomPadding())
+                .fillMaxSize()
+        )
+    }
+}
+
+
+/* @Composable
 fun ChatScreen() {
     val messages = remember { SampleData.conversationSample.toMutableStateList() }
     var currentText by remember { mutableStateOf("") }
-    val coroutineScope = rememberCoroutineScope() // ✅ se agrega esta línea
+    val coroutineScope = rememberCoroutineScope() //
 
     Scaffold(
         modifier = Modifier.padding(WindowInsets.navigationBars.asPaddingValues()),
@@ -197,7 +299,7 @@ fun ChatScreen() {
         )
     }
 }
-
+*/
 
 @Preview(showBackground = true)
 @Composable
