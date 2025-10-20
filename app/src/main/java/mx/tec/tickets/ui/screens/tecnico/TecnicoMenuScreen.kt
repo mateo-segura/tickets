@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
@@ -23,6 +24,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import mx.tec.tickets.ui.screens.mesa.MesaClosedTicketsScreen
 
 //viewmodel area compartida de todas las pantallas
 @Composable
@@ -37,22 +39,18 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String,us
                         icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                         label = { Text("Inicio") }
                     )
-                    //Spacer(modifier = Modifier.weight(1f))
-
-                    FloatingActionButton(
-                        onClick = { /* do something */ },
-                        containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                        elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
-                    ) {
-                        Icon(Icons.Filled.Add, "Localized description")
-                    }
-
                     NavigationBarItem(
-                        selected = selectedOption == 2,
-                        onClick = { selectedOption = 2 },
-                        icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
-                        label = { Text("Notificaciones") }
+                        selected = selectedOption == 1,
+                        onClick = { selectedOption = 1 },
+                        icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
+                        label = { Text("Tickets Cerrados") }
                     )
+//                    NavigationBarItem(
+//                        selected = selectedOption == 2,
+//                        onClick = { selectedOption = 2 },
+//                        icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
+//                        label = { Text("Notificaciones") }
+//                    )
                 }
             }
         ) { padding ->
@@ -63,7 +61,7 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String,us
             ) {
                 when (selectedOption) {
                     0 -> HomeScreen(navController,token,role,userID)
-                    1 -> TicketsScreen()
+                    1 -> TecnicoClosedTicketsScreen()
                     2 -> NotificationsScreen(navController)
                 }
             }
@@ -79,7 +77,7 @@ fun HomeScreen(navController: NavController,token: String,role: String,userID: I
 }
 
 @Composable
-fun TicketsScreen() {
+fun TecnicoClosedTicketsScreen() {
 
 }
 

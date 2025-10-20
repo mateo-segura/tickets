@@ -15,8 +15,12 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -180,33 +184,53 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
 
         // Spacer(modifier = Modifier.weight(1f))
 
-        // Boton de historial de tickets
+        // Boton de crear tickets
 
-        Column(
-            modifier = Modifier.fillMaxWidth()
-                .padding(top = 20.dp)
-                .padding(bottom = 70.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ){
-            Button(
-                onClick = {},
-                modifier = Modifier.drawColoredShadow(
-                    color = Color.Black,           // Shadow color
-                    alpha = 0.25f,                 // Opacity of the shadow
-                    borderRadius = 8.dp,           // Match your box corner radius
-                    shadowRadius = 12.dp,          // Blur radius of the shadow
-                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                    offsetX = 0.dp                 // Horizontal offset (centered)
-                ),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.Gray,
-                    contentColor = Color.White
+
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            FloatingActionButton(
+                onClick = { /* do something */ },
+                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Crear ticket"
                 )
-
-            ){
-                Text(text = "Tickets Cerrados")
             }
         }
+
+        // El boton de tickets cerrados de mesa está en MesaMenuScreen.kt
+//        Column(
+//            modifier = Modifier.fillMaxWidth()
+//                .padding(top = 20.dp)
+//                .padding(bottom = 70.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ){
+//            Button(
+//                onClick = {},
+//                modifier = Modifier.drawColoredShadow(
+//                    color = Color.Black,           // Shadow color
+//                    alpha = 0.25f,                 // Opacity of the shadow
+//                    borderRadius = 8.dp,           // Match your box corner radius
+//                    shadowRadius = 12.dp,          // Blur radius of the shadow
+//                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
+//                    offsetX = 0.dp                 // Horizontal offset (centered)
+//                ),
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = Color.Gray,
+//                    contentColor = Color.White
+//                )
+//
+//            ){
+//                Text(text = "Tickets Cerrados")
+//            }
+//        }
 
         // Spacer(modifier = Modifier.weight(1f))
 

@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.BottomAppBarDefaults
@@ -37,22 +38,18 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String,userI
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                     label = { Text("Inicio") }
                 )
-                //Spacer(modifier = Modifier.weight(1f))
-
-                FloatingActionButton(
-                    onClick = { /* do something */ },
-                    containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                    elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
-                ) {
-                    Icon(Icons.Filled.Add, "Localized description")
-                }
-
                 NavigationBarItem(
-                    selected = selectedOption == 2,
-                    onClick = { selectedOption = 2 },
-                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
-                    label = { Text("Notificaciones") }
+                    selected = selectedOption == 1,
+                    onClick = { selectedOption = 1 },
+                    icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
+                    label = { Text("Tickets Cerrados") }
                 )
+//                NavigationBarItem(
+//                    selected = selectedOption == 2,
+//                    onClick = { selectedOption = 2 },
+//                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
+//                    label = { Text("Notificaciones") }
+//                )
             }
         }
     ) { padding ->
@@ -63,7 +60,7 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String,userI
         ) {
             when (selectedOption) {
                 0 -> MesaHomeScreen(navController,token,role,userID)
-                1 -> MesaTicketsScreen()
+                1 -> MesaClosedTicketsScreen()
                 2 -> MesaNotificationsScreen(navController)
             }
         }
@@ -79,7 +76,7 @@ fun MesaHomeScreen(navController: NavController,token: String,role: String,userI
 }
 
 @Composable
-fun MesaTicketsScreen() {
+fun MesaClosedTicketsScreen() {
 
 }
 

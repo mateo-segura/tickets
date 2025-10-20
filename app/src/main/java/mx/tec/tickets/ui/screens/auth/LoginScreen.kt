@@ -40,7 +40,7 @@ fun LoginScreen(onLoginSuccess: (jwtToken: String, role: String,userid:Int) -> U
         OutlinedTextField(
             value = usuario,
             onValueChange = { usuario = it },    //it cambia el valor del cuadro
-            label = { Text("Usuario") }
+            label = { Text("Correo electrónico") }
         )
         OutlinedTextField(
             value = password,
