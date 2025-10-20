@@ -57,7 +57,7 @@ fun fetchAceptedTickets(
     val listener = Response.Listener<JSONArray> { response ->
         for (i in 0 until response.length()) {
             val acceptedTickets = NonAcceptedTicket(
-                response.getJSONObject(i).getInt("Ticket_ID"),
+                response.getJSONObject(i).getInt("id"),
                 response.getJSONObject(i).getString("title"),
                 response.getJSONObject(i).getString("description"),
                 response.getJSONObject(i).getString("category"),
