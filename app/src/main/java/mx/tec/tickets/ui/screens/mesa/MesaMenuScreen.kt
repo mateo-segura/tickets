@@ -25,9 +25,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 
 //viewmodel area compartida de todas las pantallas
-@Preview
 @Composable
-fun MesaMenuScreen(navController: NavController,token: String,role: String) {
+fun MesaMenuScreen(navController: NavController,token: String,role: String,userID:Int) {
     var selectedOption by remember { mutableIntStateOf(0) }
     Scaffold(
         bottomBar = {
@@ -63,7 +62,7 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String) {
                 .padding(padding)
         ) {
             when (selectedOption) {
-                0 -> MesaHomeScreen(navController,token,role)
+                0 -> MesaHomeScreen(navController,token,role,userID)
                 1 -> MesaTicketsScreen()
                 2 -> MesaNotificationsScreen(navController)
             }
@@ -75,8 +74,8 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String) {
 
 
 @Composable
-fun MesaHomeScreen(navController: NavController,token: String,role: String) {
-    MainMesaScreen(navController, token, role)
+fun MesaHomeScreen(navController: NavController,token: String,role: String,userID: Int) {
+    MainMesaScreen(navController, token, role,userID)
 }
 
 @Composable

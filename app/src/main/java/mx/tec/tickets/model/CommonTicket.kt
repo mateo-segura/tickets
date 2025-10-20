@@ -1,13 +1,15 @@
 package mx.tec.tickets.model
 
-//todo: refactorizar a TecnicoTicket
-data class NonAcceptedTicket (
-    val ticketID: Int,
+data class CommonTicket (
+    val id: Int,
     val title: String,
     val description: String,
     val category: String,
     val priority: String,
     val status: String,
+    val createdBy: Int,
+    val assignedTo: Int,
+    val createdAt: String,
+    val isActive: Int,
     val accepted: Int,
-    val createdAt: String
 )

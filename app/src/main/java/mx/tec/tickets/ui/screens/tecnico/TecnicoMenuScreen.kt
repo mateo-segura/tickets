@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 
 //viewmodel area compartida de todas las pantallas
-@Preview
 @Composable
 fun TecnicoMenuScreen(navController: NavController,token: String,role: String,userID: Int) {
     var selectedOption by remember { mutableIntStateOf(0) }

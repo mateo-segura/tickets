@@ -35,13 +35,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import mx.tec.tickets.ui.screens.mesa.components.MesaTicketList
+import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketList
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
 // Vista principal tecnico
 
-@Preview(showBackground = true, showSystemUi = true)
+//@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainMesaScreen(navController: NavController,token: String,role: String) {
+fun MainMesaScreen(navController: NavController,token: String,role: String,userID:Int) {
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
     val density = LocalDensity.current
@@ -171,8 +173,7 @@ fun MainMesaScreen(navController: NavController,token: String,role: String) {
 
             // Espacio de tickets Mis Tickets
             Column {
-                // AppNavigation() este es el controlador de navegacion
-                //TecnicoTicketList(navController) // esta es la ruta para la lista de tickets
+                MesaTicketList(navController, userID,token)
             }
 
         }
