@@ -14,6 +14,10 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.PlatformTextStyle
@@ -26,20 +30,24 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import mx.tec.tickets.model.NonAcceptedTicket
+import mx.tec.tickets.ui.theme.BottomSheetTickets
 
 @Composable
-fun TecnicoNonAcceptedTicketCard(nonAcceptedTicket: NonAcceptedTicket, navController: NavController,userID:Int) {
+fun TecnicoNonAcceptedTicketCard(nonAcceptedTicket: NonAcceptedTicket, navController: NavController,userID:Int, jwtToken: String) {
     val padding = 10.dp
     val fontSizeNormal = 11.sp
     val fontSizeTitle = 14.sp
+    val jsonTicket = Gson().toJson(nonAcceptedTicket)
+    var showSheet by remember { mutableStateOf(false) }
+    val new = true
 
     Card(
         modifier = Modifier
             .fillMaxSize()
             .padding(10.dp)
             .clickable {
-                val jsonTicket = Gson().toJson(nonAcceptedTicket)
-                navController.navigate("detailnonaccepted/${jsonTicket}")
+                //navController.navigate("detailnonaccepted/${jsonTicket}")
+                showSheet = true
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         colors = CardDefaults.cardColors(
@@ -110,4 +118,15 @@ fun TecnicoNonAcceptedTicketCard(nonAcceptedTicket: NonAcceptedTicket, navContro
             }
         }
     }
+
+    BottomSheetTickets (
+        showSheet = showSheet,
+        onDismiss = { showSheet = false},
+        navController = navController,
+        userID = userID,
+        jsonTicket = jsonTicket,
+        nonAcceptedTicket = nonAcceptedTicket,
+        new = new,
+        jwtToken = jwtToken
+    )
 }

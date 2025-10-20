@@ -1,5 +1,7 @@
 package mx.tec.tickets.ui.theme
 
+import android.content.Context
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -9,18 +11,44 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.android.volley.Request
+import com.android.volley.Response
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
+import com.google.gson.Gson
+import mx.tec.tickets.model.NonAcceptedTicket
+import mx.tec.tickets.model.Ticket
+import mx.tec.tickets.ui.screens.fetchTicket
+import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BottomSheetTickets(
     showSheet: Boolean,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    navController: NavController,
+    userID: Int,
+    jsonTicket: String,
+    nonAcceptedTicket: NonAcceptedTicket,
+    new : Boolean,
+    jwtToken: String
+
 ) {
+    val context = LocalContext.current
+    val (ticket, setTicket) = remember { mutableStateOf<Ticket?>(null)}
+
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true // optional, prevents half-expanded state
     )
+    LaunchedEffect(Unit){
+        fetchTicket(context) { result ->
+            setTicket(result)
+        }
+    }
 
     // Bottom sheet itself
     if (showSheet) {
@@ -33,8 +61,13 @@ fun BottomSheetTickets(
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-                Text(text = "Titulo",
-                    style = MaterialTheme.typography.titleLarge)
+                if (ticket != null){
+                    Text(text = "Titulo: ${nonAcceptedTicket.title}",
+                        style = MaterialTheme.typography.titleLarge)
+                } else {
+                    Text(text = "Titulo: Error",
+                        style = MaterialTheme.typography.titleLarge)
+                }
 
                 Row(
                     modifier = Modifier.padding(8.dp),
@@ -45,10 +78,17 @@ fun BottomSheetTickets(
                             .background(Color.Red) // Cambiar color
                             .size(20.dp)
                     )
-                    Text(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "Prioridad - "
-                    )
+                    if (ticket != null) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = "Prioridad - ${nonAcceptedTicket.priority}"
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = "Prioridad - Error"
+                        )
+                    }
                 }
                 Row(
                     modifier = Modifier.padding(8.dp),
@@ -59,10 +99,17 @@ fun BottomSheetTickets(
                             .background(Color.Green) // Cambiar el color
                             .size(20.dp)
                     )
-                    Text(
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        text = "Categoria - "
-                    )
+                    if (ticket != null) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = "Categoria - ${nonAcceptedTicket.category}"
+                        )
+                    } else {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            text = "Categoria - Error"
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -82,25 +129,160 @@ fun BottomSheetTickets(
                         .verticalScroll(rememberScrollState())
                         .padding(horizontal = 4.dp, vertical = 16.dp)
                 ){
-                    Text(
-                        text = "Lorem ipsum dolor carlos no qwuiere jugar nightreign.",
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-
-                Column(modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally){
-                    Button(
-                        onClick = { },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Gray,
-                            contentColor = Color.White
-                        )) {
-                        Text("Editar")
+                    if (ticket != null) {
+                        Text(
+                            text = nonAcceptedTicket.description,
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    } else {
+                        Text(
+                            text = "Error",
+                            style = MaterialTheme.typography.bodyMedium
+                        )
                     }
                 }
+
+                if (!new) {
+                    // Boton de edit
+                    Column(modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally){
+                        Button(
+                            onClick = { navController.navigate("detailnonaccepted/${jsonTicket}") },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Gray,
+                                contentColor = Color.White
+                            )) {
+                            Text("Editar")
+                        }
+                    }
+                } else {
+                    Column(modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally){
+                        Button(
+                            onClick = { acceptTicket(context, jwtToken, nonAcceptedTicket.ticketID) },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Gray,
+                                contentColor = Color.White
+                            )) {
+                            Text("Aceptar")
+                        }
+                    }
+
+                    Column(modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.CenterHorizontally){
+                        Button(
+                            onClick = { rejectTicket(context, jwtToken, nonAcceptedTicket.ticketID) },
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = Color.Gray,
+                                contentColor = Color.White
+                            )) {
+                            Text("Rechazar")
+                        }
+                    }
+                }
+
 
             }
         }
     }
+}
+
+fun fetchTicket(context: Context, onResult: (Ticket?) -> Unit) {
+    val url = "http://10.0.2.2:3000/tickets/1"
+    val queue = Volley.newRequestQueue(context)
+
+    val request = JsonObjectRequest(
+        Request.Method.GET,
+        url,
+        null,
+        { response ->
+            try {
+                // Parse response
+                val ticket = Ticket(
+                    title = response.getString("title"),
+                    priority = response.getString("priority"),
+                    assignedTo = response.getInt("assigned_to"),
+                    category = response.getString("category"),
+                    createdAt = response.getString("created_at"),
+                    description = response.getString("description")
+                )
+                onResult(ticket) // Return ticket
+            } catch (e: Exception) {
+                Log.e("VolleyParseError", e.message.toString())
+                onResult(null)
+            }
+        },
+        { error ->
+            Log.e("VolleyError", error.message.toString())
+            onResult(null)
+        }
+    )
+
+    queue.add(request)
+}
+
+fun acceptTicket(context: Context, jwtToken: String, ticketId: Int) {
+    val url = "http://10.0.2.2:3000/tickets/aceptarTicket" // Adjust to your route if needed
+    val queue = Volley.newRequestQueue(context)
+
+    val jsonBody = JSONObject()
+    jsonBody.put("id", ticketId)
+
+    val request = object : JsonObjectRequest(
+        Request.Method.PATCH,
+        url,
+        jsonBody,
+        Response.Listener { response ->
+            Log.d("ACEPTAR_TICKET", "Ticket aceptado exitosamente: $response")
+        },
+        Response.ErrorListener { error ->
+            Log.e("ACEPTAR_TICKET", "Error al aceptar ticket: ${error.message}")
+            Log.e("ACEPTAR_TICKET", "$ticketId")
+            error.networkResponse?.let {
+                Log.e("ACEPTAR_TICKET", "Status code: ${it.statusCode}")
+            }
+        }
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val headers = HashMap<String, String>()
+            headers["Content-Type"] = "application/json"
+            headers["Authorization"] = "Bearer $jwtToken" // Only if your backend uses JWT
+            return headers
+        }
+    }
+
+    queue.add(request)
+}
+
+fun rejectTicket(context: Context, jwtToken: String, ticketId: Int) {
+    val url = "http://10.0.2.2:3000/tickets/rechazarTicket" // Adjust to your route if needed
+    val queue = Volley.newRequestQueue(context)
+
+    val jsonBody = JSONObject()
+    jsonBody.put("id", ticketId)
+
+    val request = object : JsonObjectRequest(
+        Request.Method.PATCH,
+        url,
+        jsonBody,
+        Response.Listener { response ->
+            Log.d("RECHAZAR_TICKET", "Ticket rechazado exitosamente: $response")
+        },
+        Response.ErrorListener { error ->
+            Log.e("RECHAZAR_TICKET", "Error al rechazar ticket: ${error.message}")
+            Log.e("RECHAZAR_TICKET", "$ticketId")
+            error.networkResponse?.let {
+                Log.e("RECHAZAR_TICKET", "Status code: ${it.statusCode}")
+            }
+        }
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val headers = HashMap<String, String>()
+            headers["Content-Type"] = "application/json"
+            headers["Authorization"] = "Bearer $jwtToken" // Only if your backend uses JWT
+            return headers
+        }
+    }
+
+    queue.add(request)
 }

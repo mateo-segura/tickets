@@ -38,7 +38,7 @@ fun TecnicoAcceptedTicketList(navController: NavController, userID: Int,token:St
         // Status bars padding estaba causando padding conflictivo
     ) {
         items(AceptedTickets) { ticket ->
-            TecnicoAcceptedTicketCard(ticket, navController, userID)
+            TecnicoAcceptedTicketCard(ticket, navController, userID, token)
         }
     }
 }

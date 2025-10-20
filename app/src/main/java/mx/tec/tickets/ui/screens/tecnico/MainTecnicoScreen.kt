@@ -40,7 +40,6 @@ import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketList
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoNonAcceptedTicketList
 import mx.tec.tickets.ui.utils.TecnicoTicketList
 import mx.tec.tickets.ui.theme.BottomSheetCreate
-import mx.tec.tickets.ui.theme.BottomSheetNew
 import mx.tec.tickets.ui.theme.BottomSheetTickets
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
@@ -333,6 +332,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
 //        }
 
         // Bottom Sheet
+        /*
 
         BottomSheetTickets (
             showSheet = showSheet,
@@ -348,5 +348,6 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
             showSheetCreate = showSheetCreate,
             onDismiss = { showSheetCreate = false }
         )
+        */
     }
 }
