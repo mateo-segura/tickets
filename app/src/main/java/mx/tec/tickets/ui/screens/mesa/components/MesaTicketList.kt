@@ -19,8 +19,6 @@ import com.android.volley.Response
 import com.android.volley.toolbox.JsonArrayRequest
 import com.android.volley.toolbox.Volley
 import mx.tec.tickets.model.CommonTicket
-import mx.tec.tickets.model.NonAcceptedTicket
-import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketCard
 import org.json.JSONArray
 
 @Composable

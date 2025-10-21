@@ -1,17 +1,13 @@
-package mx.tec.tickets.ui.screens.mesa
+package mx.tec.tickets.ui.screens.admin
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.BottomAppBar
-import androidx.compose.material3.BottomAppBarDefaults
-import androidx.compose.material3.FloatingActionButton
-import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
@@ -22,12 +18,12 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
+import mx.tec.tickets.ui.screens.mesa.MainAdminScreen
+import mx.tec.tickets.ui.screens.tecnico.MainTecnicoScreen
 
-//viewmodel area compartida de todas las pantallas
 @Composable
-fun MesaMenuScreen(navController: NavController,token: String,role: String,userID:Int) {
+fun AdminMenuScreen(navController: NavController,token: String,role: String,userID: Int) {
     var selectedOption by remember { mutableIntStateOf(0) }
     Scaffold(
         bottomBar = {
@@ -44,12 +40,18 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String,userI
                     icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
                     label = { Text("Tickets Cerrados") }
                 )
-//                NavigationBarItem(
-//                    selected = selectedOption == 2,
-//                    onClick = { selectedOption = 2 },
-//                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
-//                    label = { Text("Notificaciones") }
-//                )
+                NavigationBarItem(
+                    selected = selectedOption == 2,
+                    onClick = { selectedOption = 2 },
+                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Home") },
+                    label = { Text("Usuarios") }
+                )
+//                    NavigationBarItem(
+//                        selected = selectedOption == 2,
+//                        onClick = { selectedOption = 2 },
+//                        icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
+//                        label = { Text("Notificaciones") }
+//                    )
             }
         }
     ) { padding ->
@@ -59,26 +61,27 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String,userI
                 .padding(padding)
         ) {
             when (selectedOption) {
-                0 -> MesaHomeScreen(navController,token,role,userID)
-                1 -> MesaClosedTicketsScreen()
-                2 -> MesaNotificationsScreen(navController)
+                0 -> HomeScreen(navController,token,role,userID)
+                1 -> TecnicoClosedTicketsScreen()
+                2 -> NotificationsScreen(navController)
             }
         }
+
     }
 }
 
 
 
 @Composable
-fun MesaHomeScreen(navController: NavController,token: String,role: String,userID: Int) {
-    MainMesaScreen(navController, token, role,userID)
+fun HomeScreen(navController: NavController,token: String,role: String,userID: Int) {
+    MainAdminScreen(navController, token, role, userID)
 }
 
 @Composable
-fun MesaClosedTicketsScreen() {
+fun TecnicoClosedTicketsScreen() {
 
 }
 
 @Composable
-fun MesaNotificationsScreen(navController:NavController) {
+fun NotificationsScreen(navController:NavController) {
 }

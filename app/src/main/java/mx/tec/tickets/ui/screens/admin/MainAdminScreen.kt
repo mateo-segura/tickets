@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens.tecnico
+package mx.tec.tickets.ui.screens.mesa
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -9,15 +9,18 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -35,31 +38,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketList
-import mx.tec.tickets.ui.screens.tecnico.components.TecnicoNonAcceptedTicketList
+import mx.tec.tickets.ui.screens.mesa.components.MesaTicketList
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
 // Vista principal tecnico
 
 //@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun MainTecnicoScreen(navController: NavController,token: String,role: String,userID: Int) {
+fun MainAdminScreen(navController: NavController,token: String,role: String,userID:Int) {
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
-    var showSheet by remember { mutableStateOf(false) }
-    var showSheetNew by remember { mutableStateOf(false) }
-    var showSheetCreate by remember { mutableStateOf(false) }
     val density = LocalDensity.current
-
-    // 1. Create the Refresh State (key)
-    var acceptedRefreshKey by remember { mutableStateOf(0) }
-
-    // 2. Define the action to trigger a refresh
-    val triggerAcceptedRefresh: () -> Unit = {
-        acceptedRefreshKey++
-    }
-
-
 
     Column (
         modifier = Modifier
@@ -85,8 +74,8 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
             Text (
                 modifier = Modifier
                     .padding(16.dp),
-                    /*.padding(WindowInsets.statusBars.asPaddingValues()), causaba problemas con el scaffold de TecnicoMenuScreen.kt https://drive.google.com/file/d/1IXaWoe8pqS4JKnhNISbMsP_zsDsrOBsa/view?usp=sharing (falta arreglar) */
-                text = "Mis Tickets: ${role}",
+                /*.padding(WindowInsets.statusBars.asPaddingValues()), causaba problemas con el scaffold de MesaMenuScreen.kt (falta arreglar) */
+                text = "Tickets: ${role} ",
                 style = MaterialTheme.typography.titleLarge.copy(
                     shadow = Shadow(
                         color = Color.Black.copy(alpha = 0.3f),
@@ -111,7 +100,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
                 val buttonHeight = 35.dp
 
                 Button (
-                    onClick = { showSheetNew = true },
+                    onClick = { /* TODO: Categoria */ },
                     shape = RoundedCornerShape(24.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     modifier = Modifier
@@ -135,7 +124,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
                     Text("Categoria", fontSize = 12.sp)
                 }
                 Button (
-                    onClick = { showSheet = true },
+                    onClick = { /* TODO: Prioridad */ },
                     shape = RoundedCornerShape(24.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     modifier = Modifier
@@ -159,7 +148,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
                     Text("Prioridad", fontSize = 12.sp)
                 }
                 Button (
-                    onClick = { showSheetCreate = true },
+                    onClick = { /* TODO: Fecha */ },
                     shape = RoundedCornerShape(24.dp),
                     contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
                     modifier = Modifier
@@ -184,74 +173,67 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
                 }
             }
 
-            // Espacio de tickets Mis Tickets (Aceptados)
-            Column () {
-                TecnicoAcceptedTicketList(navController, userID, token, acceptedRefreshKey)
+            // Espacio de tickets Mis Tickets
+            Column {
+                MesaTicketList(navController, userID,token)
             }
 
         }
 
-        // Header "Nuevos Tickets"
-        Box (
+        // Spacer(modifier = Modifier.weight(1f))
+
+        // Boton de crear tickets
+
+
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .drawColoredShadow(
-                    color = Color.Black,           // Shadow color
-                    alpha = 0.25f,                 // Opacity of the shadow
-                    borderRadius = 8.dp,           // Match your box corner radius
-                    shadowRadius = 12.dp,          // Blur radius of the shadow
-                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                    offsetX = 0.dp                 // Horizontal offset (centered)
-                )
-                .height(75.dp)
-                .background(Color.White),
+                .padding(vertical = 16.dp),
             contentAlignment = Alignment.Center
-        ){
-            Text (
-                modifier = Modifier,
-                text = "Nuevos Tickets",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    shadow = Shadow(
-                        color = Color.Black.copy(alpha = 0.3f),
-                        offset = Offset(2f, 2f), // x, y displacement in pixels
-                        blurRadius = 4f          // how soft the shadow is
-                    )
+        ) {
+            FloatingActionButton(
+                onClick = { /* do something */ },
+                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
+                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
+            ) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = "Crear ticket"
                 )
-            )
+            }
         }
 
-        // Espacio de tickets Nuevos Tickets (No aceptados)
+        // El boton de tickets cerrados de mesa está en MesaMenuScreen.kt
+//        Column(
+//            modifier = Modifier.fillMaxWidth()
+//                .padding(top = 20.dp)
+//                .padding(bottom = 70.dp),
+//            horizontalAlignment = Alignment.CenterHorizontally
+//        ){
+//            Button(
+//                onClick = {},
+//                modifier = Modifier.drawColoredShadow(
+//                    color = Color.Black,           // Shadow color
+//                    alpha = 0.25f,                 // Opacity of the shadow
+//                    borderRadius = 8.dp,           // Match your box corner radius
+//                    shadowRadius = 12.dp,          // Blur radius of the shadow
+//                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
+//                    offsetX = 0.dp                 // Horizontal offset (centered)
+//                ),
+//                colors = ButtonDefaults.buttonColors(
+//                    containerColor = Color.Gray,
+//                    contentColor = Color.White
+//                )
+//
+//            ){
+//                Text(text = "Tickets Cerrados")
+//            }
+//        }
 
-        Column (
-            modifier = Modifier
-                .weight(1f)
-        ){
-            TecnicoNonAcceptedTicketList(navController, userID, token, triggerAcceptedRefresh)
-        }
+        // Spacer(modifier = Modifier.weight(1f))
 
-        // Barra de navegacion
-
-        /*
-        Box (
-            modifier = Modifier
-                .fillMaxWidth()
-                .drawColoredShadow(
-                    color = Color.Black,           // Shadow color
-                    alpha = 0.25f,                 // Opacity of the shadow
-                    borderRadius = 8.dp,           // Match your box corner radius
-                    shadowRadius = 12.dp,          // Blur radius of the shadow
-                    offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                    offsetX = 0.dp                 // Horizontal offset (centered)
-                )
-                //.height(100.dp)
-                .background(Color.White)
-        ){
-            MenuScreen()
-        }
-
-         */
-
-        /*lo comenté porque el appbar está en TecnicoMenuScreen.kt*/
+        // barra de navegacion
+        // /*lo comenté porque el appbar está en MesaMenuScreen.kt*/
 //        Box (
 //            modifier = Modifier
 //                .fillMaxWidth()
@@ -327,32 +309,12 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
 //                Column(
 //                    horizontalAlignment = Alignment.CenterHorizontally
 //                ){
-//                    Icon(Icons.Default.Create, contentDescription = "Editar",
+//                    Icon(Icons.Default.AddCircle, contentDescription = "Editar",
 //                        modifier = Modifier
 //                            .padding(bottom = 4.dp))
-//                    Text("Editar")
+//                    Text("Crear")
 //                }
 //            }
-//
 //        }
-
-        // Bottom Sheet
-        /*
-
-        BottomSheetTickets (
-            showSheet = showSheet,
-            onDismiss = { showSheet = false}
-        )
-
-        BottomSheetNew (
-            showSheetNew = showSheetNew,
-            onDismiss = { showSheetNew = false}
-        )
-
-        BottomSheetCreate(
-            showSheetCreate = showSheetCreate,
-            onDismiss = { showSheetCreate = false }
-        )
-        */
     }
 }

@@ -6,6 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import mx.tec.tickets.ui.screens.admin.AdminMenuScreen
 import mx.tec.tickets.ui.screens.auth.MainScreen
 import mx.tec.tickets.ui.screens.mesa.MesaMenuScreen
 import mx.tec.tickets.ui.screens.mesa.components.MesaTicketDetail
@@ -77,5 +78,27 @@ fun AppNavigation() {
             val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
             MesaTicketDetail(acceptedticket = acceptedticket ?: "", navController)
         }
+        // rutas de admin
+        composable(
+            route = "adminmenuscreen?token={token}&role={role}&userid={userid}",
+            arguments = listOf(
+                navArgument("token") { defaultValue = ""; type = NavType.StringType },
+                navArgument("role") { defaultValue = ""; type = NavType.StringType },
+                navArgument("userid") { defaultValue = 0; type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            val role = backStackEntry.arguments?.getString("role") ?: ""
+            val userID = backStackEntry.arguments?.getInt("userid") ?: 0
+            AdminMenuScreen(navController, token, role, userID)
+        }
+        composable(
+            route = "detailcommon/{acceptedticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
+            arguments = listOf(navArgument("acceptedticket") { type = NavType.StringType }),
+        ) { backStackEntry ->
+            val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
+            MesaTicketDetail(acceptedticket = acceptedticket ?: "", navController)
+        }
+
     }
 }

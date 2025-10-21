@@ -23,6 +23,8 @@ fun MainScreen(navController: NavController) {
             navController.navigate("tecnicomenuscreen?token=$jwtToken&role=$role&userid=$userID")
         if(role=="MESA")
             navController.navigate("mesamenuscreen?token=$jwtToken&role=$role&userid=$userID")
+        if(role=="ADMIN")
+            navController.navigate("adminmenuscreen?token=$jwtToken&role=$role&userid=$userID")
     }
     else{
         LoginScreen { token, userRole, userid ->
