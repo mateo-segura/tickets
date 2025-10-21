@@ -33,7 +33,12 @@ import mx.tec.tickets.model.NonAcceptedTicket
 import mx.tec.tickets.ui.theme.BottomSheetTickets
 
 @Composable
-fun TecnicoAcceptedTicketCard(nonAcceptedTicket: NonAcceptedTicket, navController: NavController,userID:Int, jwtToken: String) {
+fun TecnicoAcceptedTicketCard(
+    nonAcceptedTicket: NonAcceptedTicket,
+    navController: NavController,userID:Int, jwtToken: String,
+    onTicketAccepted: (NonAcceptedTicket) -> Unit,
+    onTicketRejected: (NonAcceptedTicket) -> Unit
+) {
     val padding = 10.dp
     val fontSizeNormal = 11.sp
     val fontSizeTitle = 14.sp
@@ -127,6 +132,8 @@ fun TecnicoAcceptedTicketCard(nonAcceptedTicket: NonAcceptedTicket, navControlle
         jsonTicket = jsonTicket,
         nonAcceptedTicket = nonAcceptedTicket,
         new = new,
-        jwtToken = jwtToken
+        jwtToken = jwtToken,
+        onTicketAccepted = {onTicketAccepted(nonAcceptedTicket)},
+        onTicketRejected = {onTicketRejected(nonAcceptedTicket)}
     )
 }
