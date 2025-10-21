@@ -22,7 +22,12 @@ import mx.tec.tickets.model.NonAcceptedTicket
 import org.json.JSONArray
 
 @Composable
-fun TecnicoNonAcceptedTicketList(navController: NavController, userID: Int,token:String) {
+fun TecnicoNonAcceptedTicketList(
+    navController: NavController,
+    userID: Int,
+    token:String,
+    onTicketAcceptedGlobally: () -> Unit
+) {
     val context = LocalContext.current
     var nonAceptedTickets by remember { mutableStateOf(listOf<NonAcceptedTicket>()) }
     println("userID from ticketlist ${userID}")
@@ -37,8 +42,23 @@ fun TecnicoNonAcceptedTicketList(navController: NavController, userID: Int,token
         //.statusBarsPadding()
         // Status bars padding estaba causando padding conflictivo
     ) {
-        items(nonAceptedTickets) { ticket ->
-            TecnicoNonAcceptedTicketCard(ticket, navController, userID, token)
+        items(nonAceptedTickets, key = { it.ticketID }) { ticket ->
+            TecnicoNonAcceptedTicketCard(ticket, navController, userID, token,
+                onTicketAccepted = { acceptedTicket ->
+                    nonAceptedTickets = nonAceptedTickets.filter {
+                        it.ticketID != acceptedTicket.ticketID
+                    }
+
+                    onTicketAcceptedGlobally()
+                },
+
+                onTicketRejected = { rejectedTicket ->
+                    // Do the same for rejection
+                    nonAceptedTickets = nonAceptedTickets.filter {
+                        it.ticketID != rejectedTicket.ticketID
+                    }
+                }
+            )
         }
     }
 }

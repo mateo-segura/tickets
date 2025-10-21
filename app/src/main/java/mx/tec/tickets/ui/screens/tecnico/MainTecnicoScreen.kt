@@ -55,6 +55,15 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
     var showSheetCreate by remember { mutableStateOf(false) }
     val density = LocalDensity.current
 
+    // 1. Create the Refresh State (key)
+    var acceptedRefreshKey by remember { mutableStateOf(0) }
+
+    // 2. Define the action to trigger a refresh
+    val triggerAcceptedRefresh: () -> Unit = {
+        acceptedRefreshKey++
+    }
+
+
 
     Column (
         modifier = Modifier
@@ -181,7 +190,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
 
             // Espacio de tickets Mis Tickets (Aceptados)
             Column () {
-                TecnicoAcceptedTicketList(navController, userID,token)
+                TecnicoAcceptedTicketList(navController, userID, token, acceptedRefreshKey)
             }
 
         }
@@ -221,7 +230,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
             modifier = Modifier
                 .weight(1f)
         ){
-            TecnicoNonAcceptedTicketList(navController, userID,token)
+            TecnicoNonAcceptedTicketList(navController, userID, token, triggerAcceptedRefresh)
         }
 
         // Barra de navegacion

@@ -35,7 +35,9 @@ fun BottomSheetTickets(
     jsonTicket: String,
     nonAcceptedTicket: NonAcceptedTicket,
     new : Boolean,
-    jwtToken: String
+    jwtToken: String,
+    onTicketAccepted: () -> Unit,
+    onTicketRejected: () -> Unit
 
 ) {
     val context = LocalContext.current
@@ -159,7 +161,10 @@ fun BottomSheetTickets(
                     Column(modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally){
                         Button(
-                            onClick = { acceptTicket(context, jwtToken, nonAcceptedTicket.ticketID) },
+                            onClick = { acceptTicket(context, jwtToken, nonAcceptedTicket.ticketID, {
+                                onTicketAccepted()
+                                onTicketRejected()
+                            }) },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Gray,
                                 contentColor = Color.White
@@ -171,7 +176,10 @@ fun BottomSheetTickets(
                     Column(modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally){
                         Button(
-                            onClick = { rejectTicket(context, jwtToken, nonAcceptedTicket.ticketID) },
+                            onClick = { rejectTicket(context, jwtToken, nonAcceptedTicket.ticketID, {
+                                onTicketAccepted()
+                                onTicketRejected()
+                            }) },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Gray,
                                 contentColor = Color.White
@@ -221,7 +229,7 @@ fun fetchTicket(context: Context, onResult: (Ticket?) -> Unit) {
     queue.add(request)
 }
 
-fun acceptTicket(context: Context, jwtToken: String, ticketId: Int) {
+fun acceptTicket(context: Context, jwtToken: String, ticketId: Int, onSuccess: () -> Unit) {
     val url = "http://10.0.2.2:3000/tickets/aceptarTicket" // Adjust to your route if needed
     val queue = Volley.newRequestQueue(context)
 
@@ -234,6 +242,7 @@ fun acceptTicket(context: Context, jwtToken: String, ticketId: Int) {
         jsonBody,
         Response.Listener { response ->
             Log.d("ACEPTAR_TICKET", "Ticket aceptado exitosamente: $response")
+            onSuccess()
         },
         Response.ErrorListener { error ->
             Log.e("ACEPTAR_TICKET", "Error al aceptar ticket: ${error.message}")
@@ -254,7 +263,7 @@ fun acceptTicket(context: Context, jwtToken: String, ticketId: Int) {
     queue.add(request)
 }
 
-fun rejectTicket(context: Context, jwtToken: String, ticketId: Int) {
+fun rejectTicket(context: Context, jwtToken: String, ticketId: Int, onSuccess: () -> Unit) {
     val url = "http://10.0.2.2:3000/tickets/rechazarTicket" // Adjust to your route if needed
     val queue = Volley.newRequestQueue(context)
 
@@ -267,6 +276,7 @@ fun rejectTicket(context: Context, jwtToken: String, ticketId: Int) {
         jsonBody,
         Response.Listener { response ->
             Log.d("RECHAZAR_TICKET", "Ticket rechazado exitosamente: $response")
+            onSuccess()
         },
         Response.ErrorListener { error ->
             Log.e("RECHAZAR_TICKET", "Error al rechazar ticket: ${error.message}")
