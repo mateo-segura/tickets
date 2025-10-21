@@ -1,5 +1,6 @@
 package mx.tec.tickets.ui.theme
 
+import android.content.Context
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +45,9 @@ import mx.tec.tickets.ui.screens.SpinnerDropDown
 @Composable
 fun BottomSheetCreate(
     showSheetCreate: Boolean,
+    new : Boolean,
+    jwtToken: String,
+    context: Context,
     onDismiss: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(

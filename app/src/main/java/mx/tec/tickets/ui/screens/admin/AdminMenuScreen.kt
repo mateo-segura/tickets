@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import mx.tec.tickets.ui.screens.admin.adminUsersScreen.MainAdminUserScreen
 import mx.tec.tickets.ui.screens.mesa.MainAdminScreen
 import mx.tec.tickets.ui.screens.tecnico.MainTecnicoScreen
 
@@ -63,7 +64,7 @@ fun AdminMenuScreen(navController: NavController,token: String,role: String,user
             when (selectedOption) {
                 0 -> HomeScreen(navController,token,role,userID)
                 1 -> TecnicoClosedTicketsScreen()
-                2 -> NotificationsScreen(navController)
+                2 -> NotificationsScreen(navController,token,role,userID)
             }
         }
 
@@ -83,5 +84,6 @@ fun TecnicoClosedTicketsScreen() {
 }
 
 @Composable
-fun NotificationsScreen(navController:NavController) {
+fun NotificationsScreen(navController:NavController,token: String,role: String,userID: Int) {
+    MainAdminUserScreen(navController, token, role, userID)
 }
