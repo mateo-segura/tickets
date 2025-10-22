@@ -41,6 +41,8 @@ import androidx.navigation.NavController
 import mx.tec.tickets.ui.screens.mesa.components.MesaTicketList
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
+import mx.tec.tickets.ui.screens.admin.CreateUserDialog
+
 // Vista principal tecnico
 
 //@Preview(showBackground = true, showSystemUi = true)
@@ -49,6 +51,7 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
     val density = LocalDensity.current
+
 
     Column (
         modifier = Modifier
@@ -185,23 +188,6 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
         // Boton de crear tickets
 
 
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 16.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            FloatingActionButton(
-                onClick = { /* do something */ },
-                containerColor = BottomAppBarDefaults.bottomAppBarFabColor,
-                elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation()
-            ) {
-                Icon(
-                    imageVector = Icons.Filled.Add,
-                    contentDescription = "Crear ticket"
-                )
-            }
-        }
 
         // El boton de tickets cerrados de mesa está en MesaMenuScreen.kt
 //        Column(

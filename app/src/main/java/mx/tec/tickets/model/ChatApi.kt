@@ -17,6 +17,7 @@ data class MessageResponse(
     val created_at: String
 )
 
+
 interface ChatApi {
     // Obtener mensajes por ticket
     @GET("ticketMessages/byTicket/{ticket_id}")

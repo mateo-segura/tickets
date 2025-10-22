@@ -14,6 +14,11 @@ import mx.tec.tickets.ui.screens.tecnico.TecnicoMenuScreen
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketDetail
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoNonAcceptedTicketDetail
 
+
+import mx.tec.tickets.ui.screens.admin.MainAdminUserScreenNew
+import mx.tec.tickets.ui.screens.admin.users.ConfirmDeleteUserScreen
+import mx.tec.tickets.ui.screens.admin.users.RecoverPasswordScreen
+
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController() //router en react
@@ -99,6 +104,45 @@ fun AppNavigation() {
             val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
             MesaTicketDetail(acceptedticket = acceptedticket ?: "", navController)
         }
+
+
+        // CAMBIO: ruta nueva para la sección de Usuarios (solo añade, no modifica nada existente)
+        composable(
+            route = "adminusers?token={token}",
+            arguments = listOf(
+                navArgument("token") { defaultValue = ""; type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            MainAdminUserScreenNew(navController = navController, token = token)
+        }
+        // FIN CAMBIO
+
+        // ===== RUTAS NUEVAS: Usuarios -> Recuperar contraseña / Confirmar eliminación =====
+        composable(
+            route = "recoverPassword/{userId}?email={email}&token={token}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.LongType },
+                navArgument("email") { type = NavType.StringType; defaultValue = "" },
+                navArgument("token") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            RecoverPasswordScreen(navController, backStackEntry)
+        }
+
+        composable(
+            route = "confirmDelete/{userId}?email={email}&token={token}",
+            arguments = listOf(
+                navArgument("userId") { type = NavType.LongType },
+                navArgument("email") { type = NavType.StringType; defaultValue = "" },
+                navArgument("token") { type = NavType.StringType; defaultValue = "" }
+            )
+        ) { backStackEntry ->
+            ConfirmDeleteUserScreen(navController, backStackEntry)
+        }
+// ===== FIN RUTAS NUEVAS =====
+
+
 
     }
 }

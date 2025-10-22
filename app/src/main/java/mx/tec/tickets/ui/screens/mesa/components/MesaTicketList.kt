@@ -64,7 +64,7 @@ fun fetchTickets(
                 response.getJSONObject(i).getString("priority"),
                 response.getJSONObject(i).getString("status"),
                 response.getJSONObject(i).getInt("created_by"),
-                response.getJSONObject(i).getInt("assigned_to"),
+                response.getJSONObject(i).optInt("assigned_to", -1),
                 response.getJSONObject(i).getString("created_at"),
                 response.getJSONObject(i).getInt("is_active"),
                 response.getJSONObject(i).getInt("acepted"),

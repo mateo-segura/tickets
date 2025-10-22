@@ -19,16 +19,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+
+// Import que ya existía y NO toco
 import mx.tec.tickets.ui.screens.admin.adminUsersScreen.MainAdminUserScreen
+
 import mx.tec.tickets.ui.screens.mesa.MainAdminScreen
 import mx.tec.tickets.ui.screens.tecnico.MainTecnicoScreen
 
+// CAMBIO: import de tu NUEVA pantalla de usuarios
+import mx.tec.tickets.ui.screens.admin.MainAdminUserScreenNew
+
 @Composable
-fun AdminMenuScreen(navController: NavController,token: String,role: String,userID: Int) {
+fun AdminMenuScreen(navController: NavController, token: String, role: String, userID: Int) {
     var selectedOption by remember { mutableIntStateOf(0) }
     Scaffold(
         bottomBar = {
-            BottomAppBar{
+            BottomAppBar {
                 NavigationBarItem(
                     selected = selectedOption == 0,
                     onClick = { selectedOption = 0 },
@@ -44,15 +50,9 @@ fun AdminMenuScreen(navController: NavController,token: String,role: String,user
                 NavigationBarItem(
                     selected = selectedOption == 2,
                     onClick = { selectedOption = 2 },
-                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Home") },
+                    icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Usuarios") },
                     label = { Text("Usuarios") }
                 )
-//                    NavigationBarItem(
-//                        selected = selectedOption == 2,
-//                        onClick = { selectedOption = 2 },
-//                        icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
-//                        label = { Text("Notificaciones") }
-//                    )
             }
         }
     ) { padding ->
@@ -62,28 +62,30 @@ fun AdminMenuScreen(navController: NavController,token: String,role: String,user
                 .padding(padding)
         ) {
             when (selectedOption) {
-                0 -> HomeScreen(navController,token,role,userID)
+                0 -> HomeScreen(navController, token, role, userID)
                 1 -> TecnicoClosedTicketsScreen()
-                2 -> NotificationsScreen(navController,token,role,userID)
+                2 -> NotificationsScreen(navController, token, role, userID) // mantiene el flujo original
             }
         }
-
     }
 }
 
-
-
 @Composable
-fun HomeScreen(navController: NavController,token: String,role: String,userID: Int) {
+fun HomeScreen(navController: NavController, token: String, role: String, userID: Int) {
     MainAdminScreen(navController, token, role, userID)
 }
 
 @Composable
 fun TecnicoClosedTicketsScreen() {
-
+    // pendiente
 }
 
 @Composable
-fun NotificationsScreen(navController:NavController,token: String,role: String,userID: Int) {
-    MainAdminUserScreen(navController, token, role, userID)
+fun NotificationsScreen(navController: NavController, token: String, role: String, userID: Int) {
+    // CAMBIO: antes se llamaba a MainAdminUserScreen (vieja).
+    // Ahora pintamos tu NUEVA lista de usuarios sin tocar nada más.
+    MainAdminUserScreenNew(navController = navController, token = token)
+
+    // Si quieres mantener la vieja como fallback por cualquier cosa, déjala comentada:
+    // MainAdminUserScreen(navController, token, role, userID)
 }
