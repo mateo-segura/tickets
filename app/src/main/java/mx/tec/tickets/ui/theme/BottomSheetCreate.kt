@@ -28,6 +28,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -38,7 +39,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.android.volley.Request
+import com.android.volley.RequestQueue
+import com.android.volley.toolbox.JsonArrayRequest
+import com.android.volley.toolbox.JsonObjectRequest
+import com.android.volley.toolbox.Volley
 import mx.tec.tickets.ui.screens.SpinnerDropDown
+import org.json.JSONObject
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,12 +55,21 @@ fun BottomSheetCreate(
     new : Boolean,
     jwtToken: String,
     context: Context,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    userID:Int
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true // optional, prevents half-expanded state
     )
+    val opcionesPrioridad = listOf("ALTA", "MEDIA", "BAJA")
+    val opcionesCategoria = listOf("SOFTWARE", "HARDWARE", "REDES", "OTRO")
+    var tecnicosEmails by remember { mutableStateOf<List<String>>(emptyList()) }
 
+    LaunchedEffect(Unit) {
+        fetchTecnicosEmails(jwtToken, context) { emails ->
+            tecnicosEmails = emails
+        }
+    }
     // Bottom sheet itself
     if (showSheetCreate) {
         ModalBottomSheet(
@@ -62,92 +78,44 @@ fun BottomSheetCreate(
         ) {
             var titleText by remember { mutableStateOf("") }
             var descriptionText by remember { mutableStateOf("") }
-            var initState by remember { mutableStateOf("Abierto") }
+            var initStatePrioridad by remember { mutableStateOf("ALTA") }
+            var initStateCategoria by remember { mutableStateOf("REDES") }
+            var initStateTecnico by remember { mutableStateOf("Asignar técnico") }
 
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp)
             ) {
-
-                Row(
+                TextField(
+                    value = titleText,
+                    onValueChange = { titleText = it },
+                    label = { Text(text = "Titulo",
+                        style = MaterialTheme.typography.bodySmall) },
+                    //modifier = Modifier.height(60.dp)
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                TextField(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(12.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ){
+                        .height(140.dp)
+                        .verticalScroll(rememberScrollState())
+                        .padding(horizontal = 4.dp, vertical = 16.dp)
+                        .border(width = 1.dp, color = Color.Black),
+                    value = descriptionText,
+                    onValueChange = { descriptionText = it },
+                    label = { Text("Escribe la descripción") }
+                )
+                Spacer(modifier = Modifier.height(10.dp))
+                SpinnerDropDown("Prioridad", initStatePrioridad,opcionesPrioridad) { initStatePrioridad = it }
+                Spacer(modifier = Modifier.height(10.dp))
+                SpinnerDropDown("Categoría", initStateCategoria,opcionesCategoria) { initStateCategoria = it }
+                Spacer(modifier = Modifier.height(10.dp))
+                SpinnerDropDown("Técnico", initStateTecnico, tecnicosEmails) { initStateTecnico = it }
+                Spacer(modifier = Modifier.height(10.dp))
 
-                    Row (
-                        modifier = Modifier.fillMaxWidth()
-                            .background(
-                                color = Color.Gray,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .weight(1f)
-                            //.height(60.dp)
-                            .padding(20.dp),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ){
-                        Text(text = "Titulo:",
-                            style = MaterialTheme.typography.titleSmall)
-
-                        TextField(
-                            value = titleText,
-                            onValueChange = { titleText = it },
-                            label = { Text(text = "Titulo",
-                                style = MaterialTheme.typography.bodySmall) },
-                            //modifier = Modifier.height(60.dp)
-                        )
-                    }
-                    Box(
-                        modifier = Modifier.weight(1f)
-                    ){
-                        SpinnerDropDown("Estado", initState) { initState = it }
-                    }
-                }
-
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = Color.Gray,
-                            shape = RoundedCornerShape(16.dp)
-                        )
-                        .padding(12.dp)
-                ){
-                    Column{
-                        Text(
-                            modifier = Modifier.fillMaxWidth().padding(horizontal = 4.dp),
-                            text = "Descripcion:",
-                            style = MaterialTheme.typography.bodyLarge.copy(
-                                fontWeight = FontWeight.SemiBold
-                            )
-                        )
-
-                        TextField(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(140.dp)
-                                .verticalScroll(rememberScrollState())
-                                .padding(horizontal = 4.dp, vertical = 16.dp)
-                                .border(width = 1.dp, color = Color.Black),
-                            value = descriptionText,
-                            onValueChange = { descriptionText = it },
-                            label = { Text("Escribe la descripción") }
-                        )
-                    }
-
-                }
-
-
-
-
-                Column(modifier = Modifier.fillMaxWidth(),
-                    horizontalAlignment = Alignment.CenterHorizontally){
+                Row(modifier = Modifier
+                    .fillMaxWidth()){
                     Button(
                         onClick = { },
                         colors = ButtonDefaults.buttonColors(
@@ -156,7 +124,6 @@ fun BottomSheetCreate(
                         )) {
                         Text("Crear")
                     }
-
                     Button(
                         onClick = { },
                         colors = ButtonDefaults.buttonColors(
@@ -165,6 +132,48 @@ fun BottomSheetCreate(
                         )) {
                         Text("Cancelar")
                     }
+                }
+                Button(
+                    onClick = {
+                        // Validar campos obligatorios
+                        if (titleText.isBlank() || descriptionText.isBlank()) {
+                            // Puedes mostrar un mensaje aquí (por ahora solo evita el envío)
+                            return@Button
+                        }
+
+                        // Determinar assigned_to: null si no se asignó técnico
+                        val assignedTo = if (initStateTecnico == "Asignar técnico") {
+                            null
+                        } else {
+                            initStateTecnico
+                        }
+
+                        // Hacer la petición
+                        crearTicket(
+                            jwtToken = jwtToken,
+                            context = context,
+                            title = titleText,
+                            description = descriptionText,
+                            category = initStateCategoria,
+                            priority = initStatePrioridad,
+                            created_by = userID,
+                            assigned_to = assignedTo,
+                            onSuccess = {
+                                // Cerrar el bottom sheet y limpiar (opcional)
+                                onDismiss()
+                            },
+                            onError = { errorMsg ->
+                                println("Error al crear ticket: $errorMsg")
+                                // Aquí podrías usar un Toast para notificar al usuario
+                            }
+                        )
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color.Gray,
+                        contentColor = Color.White
+                    )
+                ) {
+                    Text("Crear")
                 }
 
             }
@@ -184,9 +193,9 @@ fun ShowBottomSheetCreate() {
 fun SpinnerDropDown(
     texto: String,
     seleccion: String,
-    onSeleccion: (String) -> Unit
+    opciones: List<String>,
+    onSeleccion: (String) -> Unit,
 ){
-    val estado = listOf("Abierto", "En proceso", "Cerrado")
     var abierto by remember { mutableStateOf(false)}
 
     ExposedDropdownMenuBox(
@@ -207,16 +216,96 @@ fun SpinnerDropDown(
             expanded = abierto,
             onDismissRequest = { abierto = false }
         ) {
-            estado.forEach{ estado ->
+            opciones.forEach{ opcion ->
                 DropdownMenuItem(
-                    text = { Text(estado) },
+                    text = { Text(opcion) },
                     onClick = {
-                        onSeleccion(estado)
+                        onSeleccion(opcion)
                         abierto = false
                     }
                 )
             }
         }
     }
+}
 
+fun fetchTecnicosEmails(
+    jwtToken: String,
+    context: Context,
+    onSuccess: (List<String>) -> Unit
+) {
+    val queue = Volley.newRequestQueue(context)
+    val url = "http://10.0.2.2:3000/usuarios/tecnicos"
+
+    val request = object : JsonArrayRequest(
+        Method.GET, url, null,
+        { response ->
+            val emails = mutableListOf<String>()
+            for (i in 0 until response.length()) {
+                val user = response.getJSONObject(i)
+                if (user.getString("role") == "TECNICO" && user.getInt("is_active") == 1) {
+                    emails.add(user.getString("email"))
+                }
+            }
+            onSuccess(emails)
+        },
+        { error ->
+            println("Error Volley: ${error.message}")
+            onSuccess(emptyList())
+        }
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val headers = HashMap<String, String>()
+            headers["Authorization"] = "Bearer $jwtToken"
+            headers["Content-Type"] = "application/json"
+            return headers
+        }
+    }
+
+    queue.add(request)
+}
+
+fun crearTicket(
+    jwtToken: String,
+    context: Context,
+    title: String,
+    description: String,
+    category: String,
+    priority: String,
+    created_by: Int,
+    assigned_to: String?, // puede ser null
+    onSuccess: () -> Unit,
+    onError: (String) -> Unit
+) {
+    val queue = Volley.newRequestQueue(context)
+    val url = "http://10.0.2.2:3000/tickets/insertar" // Ajusta si usas otra IP
+
+    val jsonBody = JSONObject().apply {
+        put("title", title)
+        put("description", description)
+        put("category", category)
+        put("priority", priority)
+        put("created_by", created_by)
+        put("assigned_to", assigned_to) // Volley maneja null correctamente
+    }
+
+    val request = object : JsonObjectRequest(
+        Request.Method.POST, url, jsonBody,
+        { response ->
+            onSuccess()
+        },
+        { error ->
+            val errorMsg = error.networkResponse?.statusCode?.toString() ?: error.message ?: "Error desconocido"
+            onError(errorMsg)
+        }
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            return HashMap<String, String>().apply {
+                put("Authorization", "Bearer $jwtToken")
+                put("Content-Type", "application/json")
+            }
+        }
+    }
+
+    queue.add(request)
 }

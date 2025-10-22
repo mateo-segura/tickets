@@ -367,7 +367,7 @@ fun fetchTicket(context: Context, onResult: (List<Ticket>) -> Unit) {
 
 
 fun fetchTicket(context: Context, onResult: (Ticket?) -> Unit) {
-    val url = "http://10.0.2.2:3000/tickets/1"
+val url = "http://10.0.2.2:3000/tickets/1"
     val queue = Volley.newRequestQueue(context)
 
     val request = JsonObjectRequest(
