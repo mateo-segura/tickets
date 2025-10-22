@@ -64,12 +64,16 @@ fun BottomSheetCreate(
     val opcionesPrioridad = listOf("ALTA", "MEDIA", "BAJA")
     val opcionesCategoria = listOf("SOFTWARE", "HARDWARE", "REDES", "OTRO")
     var tecnicosEmails by remember { mutableStateOf<List<String>>(emptyList()) }
+    var tecnicos by remember { mutableStateOf<List<Tecnico>>(emptyList()) }
+    var selectedTecnicoId by remember { mutableStateOf<Int?>(null) }
+    var selectedTecnicoEmail by remember { mutableStateOf("Asignar técnico") }
 
     LaunchedEffect(Unit) {
-        fetchTecnicosEmails(jwtToken, context) { emails ->
-            tecnicosEmails = emails
+        fetchTecnicos(jwtToken, context) { lista ->
+            tecnicos = lista
         }
     }
+    val opcionesTecnico = tecnicos.map { it.email }
     // Bottom sheet itself
     if (showSheetCreate) {
         ModalBottomSheet(
@@ -111,44 +115,36 @@ fun BottomSheetCreate(
                 Spacer(modifier = Modifier.height(10.dp))
                 SpinnerDropDown("Categoría", initStateCategoria,opcionesCategoria) { initStateCategoria = it }
                 Spacer(modifier = Modifier.height(10.dp))
-                SpinnerDropDown("Técnico", initStateTecnico, tecnicosEmails) { initStateTecnico = it }
+                SpinnerDropDown(
+                    texto = "Técnico",
+                    seleccion = selectedTecnicoEmail,
+                    opciones = opcionesTecnico
+                ) { emailSeleccionado ->
+                    selectedTecnicoEmail = emailSeleccionado
+                    // Buscar el ID correspondiente
+                    val tecnico = tecnicos.find { it.email == emailSeleccionado }
+                    selectedTecnicoId = tecnico?.id
+                }
                 Spacer(modifier = Modifier.height(10.dp))
 
-                Row(modifier = Modifier
-                    .fillMaxWidth()){
-                    Button(
-                        onClick = { },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Gray,
-                            contentColor = Color.White
-                        )) {
-                        Text("Crear")
-                    }
-                    Button(
-                        onClick = { },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Color.Gray,
-                            contentColor = Color.White
-                        )) {
-                        Text("Cancelar")
-                    }
+                val assignedToId = if (selectedTecnicoEmail == "Asignar técnico") {
+                    null
+                } else {
+                    selectedTecnicoId
                 }
                 Button(
                     onClick = {
-                        // Validar campos obligatorios
                         if (titleText.isBlank() || descriptionText.isBlank()) {
-                            // Puedes mostrar un mensaje aquí (por ahora solo evita el envío)
                             return@Button
                         }
 
-                        // Determinar assigned_to: null si no se asignó técnico
-                        val assignedTo = if (initStateTecnico == "Asignar técnico") {
+                        // Usar selectedTecnicoId (Int?) directamente
+                        val assignedToId = if (selectedTecnicoEmail == "Asignar técnico") {
                             null
                         } else {
-                            initStateTecnico
+                            selectedTecnicoId
                         }
 
-                        // Hacer la petición
                         crearTicket(
                             jwtToken = jwtToken,
                             context = context,
@@ -157,14 +153,12 @@ fun BottomSheetCreate(
                             category = initStateCategoria,
                             priority = initStatePrioridad,
                             created_by = userID,
-                            assigned_to = assignedTo,
+                            assigned_to = assignedToId, // ← Ahora es Int?
                             onSuccess = {
-                                // Cerrar el bottom sheet y limpiar (opcional)
                                 onDismiss()
                             },
                             onError = { errorMsg ->
                                 println("Error al crear ticket: $errorMsg")
-                                // Aquí podrías usar un Toast para notificar al usuario
                             }
                         )
                     },
@@ -229,10 +223,12 @@ fun SpinnerDropDown(
     }
 }
 
-fun fetchTecnicosEmails(
+data class Tecnico(val id: Int, val email: String)
+
+fun fetchTecnicos(
     jwtToken: String,
     context: Context,
-    onSuccess: (List<String>) -> Unit
+    onSuccess: (List<Tecnico>) -> Unit
 ) {
     val queue = Volley.newRequestQueue(context)
     val url = "http://10.0.2.2:3000/usuarios/tecnicos"
@@ -240,28 +236,32 @@ fun fetchTecnicosEmails(
     val request = object : JsonArrayRequest(
         Method.GET, url, null,
         { response ->
-            val emails = mutableListOf<String>()
+            val tecnicos = mutableListOf<Tecnico>()
             for (i in 0 until response.length()) {
                 val user = response.getJSONObject(i)
                 if (user.getString("role") == "TECNICO" && user.getInt("is_active") == 1) {
-                    emails.add(user.getString("email"))
+                    tecnicos.add(
+                        Tecnico(
+                            id = user.getInt("id"),
+                            email = user.getString("email")
+                        )
+                    )
                 }
             }
-            onSuccess(emails)
+            onSuccess(tecnicos)
         },
         { error ->
-            println("Error Volley: ${error.message}")
+            println("Error: ${error.message}")
             onSuccess(emptyList())
         }
     ) {
         override fun getHeaders(): MutableMap<String, String> {
-            val headers = HashMap<String, String>()
-            headers["Authorization"] = "Bearer $jwtToken"
-            headers["Content-Type"] = "application/json"
-            return headers
+            return HashMap<String, String>().apply {
+                put("Authorization", "Bearer $jwtToken")
+                put("Content-Type", "application/json")
+            }
         }
     }
-
     queue.add(request)
 }
 
@@ -273,12 +273,12 @@ fun crearTicket(
     category: String,
     priority: String,
     created_by: Int,
-    assigned_to: String?, // puede ser null
+    assigned_to: Int?, // ← CAMBIADO A Int?
     onSuccess: () -> Unit,
     onError: (String) -> Unit
 ) {
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/tickets/insertar" // Ajusta si usas otra IP
+    val url = "http://10.0.2.2:3000/tickets/insertar"
 
     val jsonBody = JSONObject().apply {
         put("title", title)
@@ -286,16 +286,15 @@ fun crearTicket(
         put("category", category)
         put("priority", priority)
         put("created_by", created_by)
-        put("assigned_to", assigned_to) // Volley maneja null correctamente
+        put("assigned_to", assigned_to) // Volley acepta null y enteros
     }
 
     val request = object : JsonObjectRequest(
         Request.Method.POST, url, jsonBody,
-        { response ->
-            onSuccess()
-        },
+        { response -> onSuccess() },
         { error ->
-            val errorMsg = error.networkResponse?.statusCode?.toString() ?: error.message ?: "Error desconocido"
+            val errorMsg = error.networkResponse?.statusCode?.toString()
+                ?: error.message ?: "Error desconocido"
             onError(errorMsg)
         }
     ) {
@@ -306,6 +305,5 @@ fun crearTicket(
             }
         }
     }
-
     queue.add(request)
 }
