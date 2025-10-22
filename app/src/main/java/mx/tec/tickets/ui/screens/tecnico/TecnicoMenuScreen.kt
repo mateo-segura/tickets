@@ -45,12 +45,12 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String,us
                         icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
                         label = { Text("Tickets Cerrados") }
                     )
-//                    NavigationBarItem(
-//                        selected = selectedOption == 2,
-//                        onClick = { selectedOption = 2 },
-//                        icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
-//                        label = { Text("Notificaciones") }
-//                    )
+                    NavigationBarItem(
+                        selected = selectedOption == 2,
+                       onClick = { selectedOption = 2 },
+                        icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
+                       label = { Text("Notificaciones") }
+                   )
                 }
             }
         ) { padding ->
@@ -62,7 +62,7 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String,us
                 when (selectedOption) {
                     0 -> HomeScreen(navController,token,role,userID)
                     1 -> TecnicoClosedTicketsScreen()
-                    2 -> NotificationsScreen(navController)
+                    2 -> NotificationsScreen(navController, userID)
                 }
             }
 
@@ -82,5 +82,10 @@ fun TecnicoClosedTicketsScreen() {
 }
 
 @Composable
-fun NotificationsScreen(navController:NavController) {
+fun NotificationsScreen(
+    navController: NavController,
+    userID: Int
+) {
+    navController.navigate("mainnotificationscreen/$userID")
 }
+
