@@ -10,7 +10,10 @@ import mx.tec.tickets.ui.screens.admin.AdminMenuScreen
 import mx.tec.tickets.ui.screens.auth.MainScreen
 import mx.tec.tickets.ui.screens.mesa.MesaMenuScreen
 import mx.tec.tickets.ui.screens.mesa.components.MesaTicketDetail
+import mx.tec.tickets.ui.screens.tecnico.MainNotificationScreen
 import mx.tec.tickets.ui.screens.tecnico.TecnicoMenuScreen
+import mx.tec.tickets.ui.screens.tecnico.components.NotificationDetail
+import mx.tec.tickets.ui.screens.tecnico.components.NotificationList
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketDetail
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoNonAcceptedTicketDetail
 
@@ -61,6 +64,35 @@ fun AppNavigation() {
             val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
             TecnicoAcceptedTicketDetail(acceptedticket = acceptedticket ?: "", navController)
         }
+
+        // Notificaciones
+        composable("notificationList/{userId}") { backStack ->
+            val userId = backStack.arguments?.getString("userId")?.toInt() ?: 0
+            NotificationList(navController, userId)
+        }
+
+        composable("notificationDetail/{notification}") { backStack ->
+            val json = backStack.arguments?.getString("notification") ?: ""
+            NotificationDetail(json, navController)
+        }
+
+// pantalla principal de notificaciones
+// pantalla principal de notificaciones
+        composable(
+            route = "mainnotificationscreen/{userid}",
+            arguments = listOf(
+                navArgument("userid") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val userID = backStackEntry.arguments?.getInt("userid") ?: 0
+            MainNotificationScreen(navController, userID)
+        }
+
+
+
+
+
+
         // rutas de mesa
         composable(
             route = "mesamenuscreen?token={token}&role={role}&userid={userid}",
