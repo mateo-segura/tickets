@@ -54,6 +54,9 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
     var showSheet by remember { mutableStateOf(false) }
     val new = false
     var context=LocalContext.current
+    
+    // Agregar estado de refresh
+    var refreshKey by remember { mutableStateOf(0) }
 
     Column (
         modifier = Modifier
@@ -180,7 +183,12 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
 
             // Espacio de tickets Mis Tickets
             Column {
-                MesaTicketList(navController, userID,token)
+                MesaTicketList(
+                    navController, 
+                    userID,
+                    token,
+                    refreshKey = refreshKey // <- Pasar el refreshKey
+                )
             }
 
         }
@@ -321,6 +329,14 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
 //                }
 //            }
 //        }
-        BottomSheetCreate(showSheet,new, token, context, onDismiss = { showSheet = false},userID)
+        BottomSheetCreate(
+            showSheet,
+            new, 
+            token, 
+            context, 
+            onDismiss = { showSheet = false},
+            userID,
+            onTicketCreated = { refreshKey++ } // <- Incrementar para refrescar
+        )
     }
 }

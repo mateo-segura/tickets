@@ -22,11 +22,16 @@ import mx.tec.tickets.model.CommonTicket
 import org.json.JSONArray
 
 @Composable
-fun MesaTicketList(navController: NavController, userID: Int,token:String) {
+fun MesaTicketList(
+    navController: NavController, 
+    userID: Int,
+    token:String,
+    refreshKey: Int = 0 // <- Agregar este parámetro
+) {
     val context = LocalContext.current
     var Tickets by remember { mutableStateOf(listOf<CommonTicket>()) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshKey) { // <- Cambiar Unit por refreshKey
         fetchTickets(context, userID,token) { fetchedTickets ->
             Tickets = fetchedTickets
         }

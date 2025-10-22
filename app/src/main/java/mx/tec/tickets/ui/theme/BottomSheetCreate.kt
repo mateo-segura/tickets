@@ -56,7 +56,8 @@ fun BottomSheetCreate(
     jwtToken: String,
     context: Context,
     onDismiss: () -> Unit,
-    userID:Int
+    userID:Int,
+    onTicketCreated: () -> Unit = {} // <- Agregar este parámetro
 ) {
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true // optional, prevents half-expanded state
@@ -96,7 +97,7 @@ fun BottomSheetCreate(
                     onValueChange = { titleText = it },
                     label = { Text(text = "Titulo",
                         style = MaterialTheme.typography.bodySmall) },
-                    //modifier = Modifier.height(60.dp)
+                    modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 TextField(
@@ -111,11 +112,23 @@ fun BottomSheetCreate(
                     label = { Text("Escribe la descripción") }
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                SpinnerDropDown("Prioridad", initStatePrioridad,opcionesPrioridad) { initStatePrioridad = it }
+                
+                // Prioridad con ancho completo
+                SpinnerDropDownFullWidth("Prioridad", initStatePrioridad, opcionesPrioridad) { 
+                    initStatePrioridad = it 
+                }
+                
                 Spacer(modifier = Modifier.height(10.dp))
-                SpinnerDropDown("Categoría", initStateCategoria,opcionesCategoria) { initStateCategoria = it }
+                
+                // Categoría con ancho completo
+                SpinnerDropDownFullWidth("Categoría", initStateCategoria, opcionesCategoria) { 
+                    initStateCategoria = it 
+                }
+                
                 Spacer(modifier = Modifier.height(10.dp))
-                SpinnerDropDown(
+                
+                // Spinner de Técnico usa todo el ancho
+                SpinnerDropDownFullWidth(
                     texto = "Técnico",
                     seleccion = selectedTecnicoEmail,
                     opciones = opcionesTecnico
@@ -132,42 +145,49 @@ fun BottomSheetCreate(
                 } else {
                     selectedTecnicoId
                 }
-                Button(
-                    onClick = {
-                        if (titleText.isBlank() || descriptionText.isBlank()) {
-                            return@Button
-                        }
-
-                        // Usar selectedTecnicoId (Int?) directamente
-                        val assignedToId = if (selectedTecnicoEmail == "Asignar técnico") {
-                            null
-                        } else {
-                            selectedTecnicoId
-                        }
-
-                        crearTicket(
-                            jwtToken = jwtToken,
-                            context = context,
-                            title = titleText,
-                            description = descriptionText,
-                            category = initStateCategoria,
-                            priority = initStatePrioridad,
-                            created_by = userID,
-                            assigned_to = assignedToId, // ← Ahora es Int?
-                            onSuccess = {
-                                onDismiss()
-                            },
-                            onError = { errorMsg ->
-                                println("Error al crear ticket: $errorMsg")
-                            }
-                        )
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Gray,
-                        contentColor = Color.White
-                    )
+                
+                // Botón Crear centrado
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.Center
                 ) {
-                    Text("Crear")
+                    Button(
+                        onClick = {
+                            if (titleText.isBlank() || descriptionText.isBlank()) {
+                                return@Button
+                            }
+
+                            val assignedToId = if (selectedTecnicoEmail == "Asignar técnico") {
+                                null
+                            } else {
+                                selectedTecnicoId
+                            }
+
+                            crearTicket(
+                                jwtToken = jwtToken,
+                                context = context,
+                                title = titleText,
+                                description = descriptionText,
+                                category = initStateCategoria,
+                                priority = initStatePrioridad,
+                                created_by = userID,
+                                assigned_to = assignedToId,
+                                onSuccess = {
+                                    onTicketCreated() // <- Llamar al callback
+                                    onDismiss()
+                                },
+                                onError = { errorMsg ->
+                                    println("Error al crear ticket: $errorMsg")
+                                }
+                            )
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray,
+                            contentColor = Color.White
+                        )
+                    ) {
+                        Text("Crear")
+                    }
                 }
 
             }
@@ -205,6 +225,47 @@ fun SpinnerDropDown(
             modifier = Modifier
                 .menuAnchor(MenuAnchorType.PrimaryNotEditable)
                 .width(140.dp)
+        )
+        ExposedDropdownMenu(
+            expanded = abierto,
+            onDismissRequest = { abierto = false }
+        ) {
+            opciones.forEach{ opcion ->
+                DropdownMenuItem(
+                    text = { Text(opcion) },
+                    onClick = {
+                        onSeleccion(opcion)
+                        abierto = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SpinnerDropDownFullWidth(
+    texto: String,
+    seleccion: String,
+    opciones: List<String>,
+    onSeleccion: (String) -> Unit,
+){
+    var abierto by remember { mutableStateOf(false)}
+
+    ExposedDropdownMenuBox(
+        expanded = abierto,
+        onExpandedChange = { abierto = !abierto }
+    ) {
+        TextField(
+            value = seleccion,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(texto)},
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(abierto) },
+            modifier = Modifier
+                .menuAnchor(MenuAnchorType.PrimaryNotEditable)
+                .fillMaxWidth()
         )
         ExposedDropdownMenu(
             expanded = abierto,
@@ -273,7 +334,7 @@ fun crearTicket(
     category: String,
     priority: String,
     created_by: Int,
-    assigned_to: Int?, // ← CAMBIADO A Int?
+    assigned_to: Int?,
     onSuccess: () -> Unit,
     onError: (String) -> Unit
 ) {
