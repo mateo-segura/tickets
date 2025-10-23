@@ -71,8 +71,8 @@ fun AdminMenuScreen(navController: NavController, token: String, role: String, u
             when (selectedOption) {
                 0 -> HomeScreen(navController, token, role, userID)
                 1 -> TecnicoClosedTicketsScreen()
-                2 -> UsersScreen(navController, token, role, userID) // mantiene el flujo original
-                3 -> NotificationsScreen()
+                2 -> UsersScreen() // mantiene el flujo original
+                3 -> NotificationsScreen(navController, token, role, userID)
             }
         }
     }
@@ -89,15 +89,15 @@ fun TecnicoClosedTicketsScreen() {
 }
 
 @Composable
-fun UsersScreen (navController: NavController, token: String, role: String, userID: Int) {
+fun UsersScreen () {
     // CAMBIO: antes se llamaba a MainAdminUserScreen (vieja).
     // Ahora pintamos tu NUEVA lista de usuarios sin tocar nada más.
-    MainAdminUserScreenNew(navController = navController, token = token)
 
     // Si quieres mantener la vieja como fallback por cualquier cosa, déjala comentada:
     // MainAdminUserScreen(navController, token, role, userID)
 }
 @Composable
-fun NotificationsScreen (){
+fun NotificationsScreen (navController: NavController, token: String, role: String, userID: Int){
+    MainAdminUserScreenNew(navController = navController, token = token)
 
 }
