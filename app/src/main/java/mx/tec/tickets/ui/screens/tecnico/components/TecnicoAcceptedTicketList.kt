@@ -26,13 +26,23 @@ fun TecnicoAcceptedTicketList(
     navController: NavController,
     userID: Int,
     token:String,
-    refreshKey: Int
+    refreshKey: Int,
+    selectedCategory: String?,
+    selectedPriority: String?,
+    selectedDateSort: String
 ) {
     val context = LocalContext.current
     var AceptedTickets by remember { mutableStateOf(listOf<NonAcceptedTicket>()) }
 
     LaunchedEffect(refreshKey) {
-        fetchAceptedTickets(context, userID,token) { fetchedTickets ->
+        fetchAceptedTickets(
+            context,
+            userID,
+            token,
+            selectedCategory,
+            selectedPriority,
+            selectedDateSort
+        ) { fetchedTickets ->
             AceptedTickets = fetchedTickets
         }
     }
@@ -66,16 +76,42 @@ fun fetchAceptedTickets(
     context: Context,
     userID: Int,
     token: String,
+    category: String?,
+    priority: String?,
+    dateSort: String,
     onResult: (List<NonAcceptedTicket>) -> Unit
 ) {
     val AcceptedTickets = mutableListOf<NonAcceptedTicket>()
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/tickets/aceptedTickets/${userID}"
+    val baseUrl = "http://10.0.2.2:3000/tickets/aceptedTickets/${userID}"
     val metodo = Request.Method.GET
+
+    val queryParams = mutableListOf<String>()
+
+    category?.let {
+        queryParams.add("category=$it")
+    }
+
+    priority?.let{
+        queryParams.add("priority=$it")
+    }
+
+    //val sortOrder = if (dateSort.uppercase() == "ASC" || dateSort.uppercase() == "DESC") dateSort else "DESC"
+    queryParams.add("sort_date=$dateSort")
+
+    val url = if (queryParams.isNotEmpty()){
+        "$baseUrl?${queryParams.joinToString("&")}"
+    } else {
+        baseUrl
+    }
+
+    Log.d("API_URL", "Fetching accepted tickets from: $url")
+
     val listener = Response.Listener<JSONArray> { response ->
+        Log.d("API_RESPONSE", "Filtered Tickets Received: ${response.toString()}")
         for (i in 0 until response.length()) {
             val acceptedTickets = NonAcceptedTicket(
-                response.getJSONObject(i).getInt("Ticket_ID"),
+                response.getJSONObject(i).getInt("id"),
                 response.getJSONObject(i).getString("title"),
                 response.getJSONObject(i).getString("description"),
                 response.getJSONObject(i).getString("category"),
@@ -86,6 +122,10 @@ fun fetchAceptedTickets(
             )
             AcceptedTickets.add(acceptedTickets)
         }
+        if (response.length() == 0) {
+            Log.w("API_RESPONSE", "Server returned 0 tickets for the current filter.")
+        }
+
         onResult(AcceptedTickets)
     }
     val errorListener = Response.ErrorListener { error ->
