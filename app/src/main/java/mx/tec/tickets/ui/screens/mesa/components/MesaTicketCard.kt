@@ -26,10 +26,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.google.gson.Gson
 import mx.tec.tickets.model.CommonTicket
-import mx.tec.tickets.model.NonAcceptedTicket
 
 @Composable
-fun MesaTicketCard(nonAcceptedTicket: CommonTicket, navController: NavController,userID:Int) {
+fun MesaTicketCard(
+    nonAcceptedTicket: CommonTicket,
+    navController: NavController,
+    userID: Int,
+    ticket: String
+) {
     val padding = 10.dp
     val fontSizeNormal = 11.sp
     val fontSizeTitle = 14.sp

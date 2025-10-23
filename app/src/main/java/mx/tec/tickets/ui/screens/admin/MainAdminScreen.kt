@@ -45,6 +45,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import mx.tec.tickets.ui.screens.admin.ComponentesAdmin.AdminTicketList
 import mx.tec.tickets.ui.screens.mesa.components.MesaTicketList
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
@@ -152,6 +153,20 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
                 )
             }
 
+            // IMPORTACION
+            Column {
+                // Si vienes con rol ADMIN, dibuja la lista con menú de 3 puntos
+                if (role.equals("ADMIN", ignoreCase = true)) {
+                    AdminTicketList(
+                        navController = navController,
+                        userID = userID,
+                        token = token
+                    )
+                } else {
+
+                }
+            }
+
             // Espacio de tickets Mis Tickets
             Column {
                 MesaTicketList(
@@ -164,6 +179,8 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
                     selectedDateSort
                 )
             }
+
+
 
         }
 

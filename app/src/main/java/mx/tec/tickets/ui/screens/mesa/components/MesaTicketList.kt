@@ -53,7 +53,7 @@ fun MesaTicketList(
         // Status bars padding estaba causando padding conflictivo
     ) {
         items(Tickets) { ticket ->
-            MesaTicketCard(ticket, navController, userID)
+            MesaTicketCard(ticket, navController, userID, token)
         }
     }
 }
