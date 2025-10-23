@@ -29,7 +29,8 @@ fun MesaTicketList(
     refreshKey: Int = 0, // <- Agregar este parámetro,
     selectedCategory: String?,
     selectedPriority: String?,
-    selectedDateSort: String
+    selectedDateSort: String,
+    isClosed: Boolean
 ) {
     val context = LocalContext.current
     var Tickets by remember { mutableStateOf(listOf<CommonTicket>()) }
@@ -41,7 +42,8 @@ fun MesaTicketList(
             token,
             selectedCategory,
             selectedPriority,
-            selectedDateSort
+            selectedDateSort,
+            isClosed
         ) { fetchedTickets ->
             Tickets = fetchedTickets
         }
@@ -66,11 +68,16 @@ fun fetchTickets(
     category: String?,
     priority: String?,
     dateSort: String,
+    isClosed: Boolean,
     onResult: (List<CommonTicket>) -> Unit
 ) {
     val tickets = mutableListOf<CommonTicket>()
     val queue = Volley.newRequestQueue(context)
-    val baseUrl = "http://10.0.2.2:3000/tickets"
+    val baseUrl = if (!isClosed){
+        "http://10.0.2.2:3000/tickets"
+    } else {
+        "http://10.0.2.2:3000/tickets/ticketsCerrados"
+    }
     val metodo = Request.Method.GET
 
     val queryParams = mutableListOf<String>()

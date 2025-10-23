@@ -164,7 +164,8 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
                     refreshKey = refreshKey, // <- Pasar el refreshKey
                     selectedCategory,
                     selectedPriority,
-                    selectedDateSort
+                    selectedDateSort,
+                    isClosed = false
                 )
             }
 

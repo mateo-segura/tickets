@@ -19,6 +19,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import mx.tec.tickets.ui.screens.TicketsCerrados
 
 // Import que ya existía y NO toco
 import mx.tec.tickets.ui.screens.admin.adminUsersScreen.MainAdminUserScreen
@@ -63,7 +64,7 @@ fun AdminMenuScreen(navController: NavController, token: String, role: String, u
         ) {
             when (selectedOption) {
                 0 -> HomeScreen(navController, token, role, userID)
-                1 -> TecnicoClosedTicketsScreen()
+                1 -> TecnicoClosedTicketsScreen(navController, token, role, userID)
                 2 -> NotificationsScreen(navController, token, role, userID) // mantiene el flujo original
             }
         }
@@ -76,8 +77,8 @@ fun HomeScreen(navController: NavController, token: String, role: String, userID
 }
 
 @Composable
-fun TecnicoClosedTicketsScreen() {
-    // pendiente
+fun TecnicoClosedTicketsScreen(navController: NavController, token: String, role: String, userID: Int) {
+    TicketsCerrados(navController, token, role, userID)
 }
 
 @Composable
