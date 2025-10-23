@@ -26,13 +26,23 @@ fun MesaTicketList(
     navController: NavController, 
     userID: Int,
     token:String,
-    refreshKey: Int = 0 // <- Agregar este parámetro
+    refreshKey: Int = 0, // <- Agregar este parámetro,
+    selectedCategory: String?,
+    selectedPriority: String?,
+    selectedDateSort: String
 ) {
     val context = LocalContext.current
     var Tickets by remember { mutableStateOf(listOf<CommonTicket>()) }
 
     LaunchedEffect(refreshKey) { // <- Cambiar Unit por refreshKey
-        fetchTickets(context, userID,token) { fetchedTickets ->
+        fetchTickets(
+            context,
+            userID,
+            token,
+            selectedCategory,
+            selectedPriority,
+            selectedDateSort
+        ) { fetchedTickets ->
             Tickets = fetchedTickets
         }
     }
@@ -53,13 +63,38 @@ fun fetchTickets(
     context: Context,
     userID: Int,
     token: String,
+    category: String?,
+    priority: String?,
+    dateSort: String,
     onResult: (List<CommonTicket>) -> Unit
 ) {
     val tickets = mutableListOf<CommonTicket>()
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/tickets"
+    val baseUrl = "http://10.0.2.2:3000/tickets"
     val metodo = Request.Method.GET
+
+    val queryParams = mutableListOf<String>()
+
+    category?.let{
+        queryParams.add("category=$it")
+    }
+
+    priority?.let{
+        queryParams.add("priority=$it")
+    }
+
+    queryParams.add("sort_date=$dateSort")
+
+    val url = if(queryParams.isNotEmpty()){
+        "$baseUrl?${queryParams.joinToString ("&")}"
+    } else {
+        baseUrl
+    }
+
+    Log.d("API_URL", "Fetching accepted tickets from: $url")
+
     val listener = Response.Listener<JSONArray> { response ->
+        Log.d("API_RESPONSE", "Filtered Tickets Received: ${response.toString()}")
         for (i in 0 until response.length()) {
             val acceptedTickets = CommonTicket(
                 response.getJSONObject(i).getInt("id"),
@@ -77,6 +112,10 @@ fun fetchTickets(
                 )
             tickets.add(acceptedTickets)
         }
+        if (response.length() == 0) {
+            Log.w("API_RESPONSE", "Server returned 0 tickets for the current filter.")
+        }
+
         onResult(tickets)
     }
     val errorListener = Response.ErrorListener { error ->

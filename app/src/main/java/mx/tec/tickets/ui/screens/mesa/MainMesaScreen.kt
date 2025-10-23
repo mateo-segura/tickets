@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -19,10 +20,16 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -54,9 +61,16 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
     var showSheet by remember { mutableStateOf(false) }
     val new = false
     var context=LocalContext.current
+
+    var selectedCategory by remember {mutableStateOf<String?>(null)}
+    var selectedPriority by remember {mutableStateOf<String?>(null)}
+    var selectedDateSort by remember {mutableStateOf<String>("DESC")}
     
     // Agregar estado de refresh
     var refreshKey by remember { mutableStateOf(0) }
+    val triggerAcceptedRefresh: () -> Unit = {
+        refreshKey++
+    }
 
     Column (
         modifier = Modifier
@@ -107,78 +121,38 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
                 val buttonWidth = 120.dp
                 val buttonHeight = 35.dp
 
-                Button (
-                    onClick = { /* TODO: Categoria */ },
-                    shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    modifier = Modifier
-                        .size(buttonWidth,buttonHeight)
-                        .padding(horizontal = 4.dp)
-                        .drawColoredShadow(
-                            color = Color.Black,           // Shadow color
-                            alpha = 0.25f,                 // Opacity of the shadow
-                            borderRadius = 8.dp,           // Match your box corner radius
-                            shadowRadius = 12.dp,          // Blur radius of the shadow
-                            offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                            offsetX = 0.dp                 // Horizontal offset (centered)
-                        ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Categoria")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Categoria", fontSize = 12.sp)
-                }
-                Button (
-                    onClick = { /* TODO: Prioridad */ },
-                    shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    modifier = Modifier
-                        .size(buttonWidth,buttonHeight)
-                        .padding(horizontal = 4.dp)
-                        .drawColoredShadow(
-                            color = Color.Black,           // Shadow color
-                            alpha = 0.25f,                 // Opacity of the shadow
-                            borderRadius = 8.dp,           // Match your box corner radius
-                            shadowRadius = 12.dp,          // Blur radius of the shadow
-                            offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                            offsetX = 0.dp                 // Horizontal offset (centered)
-                        ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Prioridad")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Prioridad", fontSize = 12.sp)
-                }
-                Button (
-                    onClick = { /* TODO: Fecha */ },
-                    shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    modifier = Modifier
-                        .size(buttonWidth,buttonHeight)
-                        .padding(horizontal = 4.dp)
-                        .drawColoredShadow(
-                            color = Color.Black,           // Shadow color
-                            alpha = 0.25f,                 // Opacity of the shadow
-                            borderRadius = 8.dp,           // Match your box corner radius
-                            shadowRadius = 12.dp,          // Blur radius of the shadow
-                            offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                            offsetX = 0.dp                 // Horizontal offset (centered)
-                        ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Fecha")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Fecha", fontSize = 12.sp)
-                }
+                // Filtro de Categoria
+                FilterDropDown(
+                    label = "Categoria",
+                    options = listOf("HARDWARE", "SOFTWARE", "NETWORK", "TODOS"),
+                    currentValue = selectedCategory,
+                    onValueSelected = { newValue ->
+                        selectedCategory = if (newValue == "TODOS") null else newValue
+                        triggerAcceptedRefresh()
+                    }
+                )
+
+                // Filtro de Prioridad
+                FilterDropDown(
+                    label = "Prioridad",
+                    options = listOf("ALTA", "MEDIA", "BAJA", "TODOS"),
+                    currentValue = selectedPriority,
+                    onValueSelected = { newValue ->
+                        selectedPriority = if (newValue == "TODOS") null else newValue
+                        triggerAcceptedRefresh()
+                    }
+                )
+
+                // Filtro de fecha
+                FilterDropDown(
+                    label = "Fecha",
+                    options = listOf("Mas nuevo", "Mas antiguo"),
+                    currentValue = if (selectedDateSort == "DESC") "Mas nuevo" else "Mas antiguo",
+                    onValueSelected = { newValue ->
+                        selectedDateSort = if (newValue == "Mas nuevo") "DESC" else "ASC"
+                        triggerAcceptedRefresh()
+                    }
+                )
             }
 
             // Espacio de tickets Mis Tickets
@@ -187,7 +161,10 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
                     navController, 
                     userID,
                     token,
-                    refreshKey = refreshKey // <- Pasar el refreshKey
+                    refreshKey = refreshKey, // <- Pasar el refreshKey
+                    selectedCategory,
+                    selectedPriority,
+                    selectedDateSort
                 )
             }
 
@@ -338,5 +315,64 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
             userID,
             onTicketCreated = { refreshKey++ } // <- Incrementar para refrescar
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun FilterDropDown(
+    label: String,
+    options: List<String>,
+    currentValue: String?,
+    onValueSelected: (String) -> Unit
+){
+    var expanded by remember { mutableStateOf(false)}
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = Modifier
+            .width(120.dp)
+            .wrapContentHeight(align = Alignment.Top)
+    ) {
+        OutlinedTextField(
+            modifier = Modifier.menuAnchor(
+                MenuAnchorType.PrimaryEditable,
+                enabled = true
+            ).fillMaxWidth(),
+            readOnly = true,
+            value = currentValue ?: label,
+            onValueChange = {/* Read-only */},
+            label = { Text(label, fontSize = 12.sp)},
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)},
+            textStyle = MaterialTheme.typography.bodyMedium,
+            colors = ExposedDropdownMenuDefaults.textFieldColors(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White,
+                focusedIndicatorColor = Color.Black,
+                unfocusedIndicatorColor = Color.LightGray,
+                focusedTrailingIconColor = Color.Black,
+                unfocusedTrailingIconColor = Color.Black,
+                focusedLabelColor = Color.Black,
+                unfocusedLabelColor = Color.Black
+            ),
+            shape = RoundedCornerShape(24.dp)
+        )
+
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            options.forEach { selectionOption ->
+                DropdownMenuItem(
+                    text = { Text(selectionOption)},
+                    onClick = {
+                        onValueSelected(selectionOption)
+                        expanded = false
+                    },
+                    contentPadding = ExposedDropdownMenuDefaults.ItemContentPadding
+                )
+            }
+        }
     }
 }

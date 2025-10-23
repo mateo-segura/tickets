@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.List
@@ -19,10 +20,16 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.BottomAppBarDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -51,6 +58,15 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
     var navBarSize by remember { mutableStateOf(0.dp)}
     var notifIcon by remember { mutableStateOf(0.dp)}
     val density = LocalDensity.current
+
+    var selectedCategory by remember {mutableStateOf<String?>(null)}
+    var selectedPriority by remember {mutableStateOf<String?>(null)}
+    var selectedDateSort by remember {mutableStateOf<String>("DESC")}
+
+    var acceptedRefreshKey by remember { mutableStateOf(0) }
+    val triggerAcceptedRefresh: () -> Unit = {
+        acceptedRefreshKey++
+    }
 
 
     Column (
@@ -102,83 +118,51 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
                 val buttonWidth = 120.dp
                 val buttonHeight = 35.dp
 
-                Button (
-                    onClick = { /* TODO: Categoria */ },
-                    shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    modifier = Modifier
-                        .size(buttonWidth,buttonHeight)
-                        .padding(horizontal = 4.dp)
-                        .drawColoredShadow(
-                            color = Color.Black,           // Shadow color
-                            alpha = 0.25f,                 // Opacity of the shadow
-                            borderRadius = 8.dp,           // Match your box corner radius
-                            shadowRadius = 12.dp,          // Blur radius of the shadow
-                            offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                            offsetX = 0.dp                 // Horizontal offset (centered)
-                        ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Categoria")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Categoria", fontSize = 12.sp)
-                }
-                Button (
-                    onClick = { /* TODO: Prioridad */ },
-                    shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    modifier = Modifier
-                        .size(buttonWidth,buttonHeight)
-                        .padding(horizontal = 4.dp)
-                        .drawColoredShadow(
-                            color = Color.Black,           // Shadow color
-                            alpha = 0.25f,                 // Opacity of the shadow
-                            borderRadius = 8.dp,           // Match your box corner radius
-                            shadowRadius = 12.dp,          // Blur radius of the shadow
-                            offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                            offsetX = 0.dp                 // Horizontal offset (centered)
-                        ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Prioridad")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Prioridad", fontSize = 12.sp)
-                }
-                Button (
-                    onClick = { /* TODO: Fecha */ },
-                    shape = RoundedCornerShape(24.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
-                    modifier = Modifier
-                        .size(buttonWidth,buttonHeight)
-                        .padding(horizontal = 4.dp)
-                        .drawColoredShadow(
-                            color = Color.Black,           // Shadow color
-                            alpha = 0.25f,                 // Opacity of the shadow
-                            borderRadius = 8.dp,           // Match your box corner radius
-                            shadowRadius = 12.dp,          // Blur radius of the shadow
-                            offsetY = 4.dp,                // Vertical offset (shadow below the box)
-                            offsetX = 0.dp                 // Horizontal offset (centered)
-                        ),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.White,
-                        contentColor = Color.Black
-                    )
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Fecha")
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Text("Fecha", fontSize = 12.sp)
-                }
+                // Filtro de Categoria
+                FilterDropDown(
+                    label = "Categoria",
+                    options = listOf("HARDWARE", "SOFTWARE", "NETWORK", "TODOS"),
+                    currentValue = selectedCategory,
+                    onValueSelected = { newValue ->
+                        selectedCategory = if (newValue == "TODOS") null else newValue
+                        triggerAcceptedRefresh()
+                    }
+                )
+
+                // Filtro de Prioridad
+                FilterDropDown(
+                    label = "Prioridad",
+                    options = listOf("ALTA", "MEDIA", "BAJA", "TODOS"),
+                    currentValue = selectedPriority,
+                    onValueSelected = { newValue ->
+                        selectedPriority = if (newValue == "TODOS") null else newValue
+                        triggerAcceptedRefresh()
+                    }
+                )
+
+                // Filtro de fecha
+                FilterDropDown(
+                    label = "Fecha",
+                    options = listOf("Mas nuevo", "Mas antiguo"),
+                    currentValue = if (selectedDateSort == "DESC") "Mas nuevo" else "Mas antiguo",
+                    onValueSelected = { newValue ->
+                        selectedDateSort = if (newValue == "Mas nuevo") "DESC" else "ASC"
+                        triggerAcceptedRefresh()
+                    }
+                )
             }
 
             // Espacio de tickets Mis Tickets
             Column {
-                MesaTicketList(navController, userID,token)
+                MesaTicketList(
+                    navController,
+                    userID,
+                    token,
+                    acceptedRefreshKey,
+                    selectedCategory,
+                    selectedPriority,
+                    selectedDateSort
+                )
             }
 
         }
