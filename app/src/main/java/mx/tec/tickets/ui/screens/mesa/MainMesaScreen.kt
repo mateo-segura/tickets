@@ -33,6 +33,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -67,7 +68,7 @@ fun MainMesaScreen(navController: NavController,token: String,role: String,userI
     var selectedDateSort by remember {mutableStateOf<String>("DESC")}
     
     // Agregar estado de refresh
-    var refreshKey by remember { mutableStateOf(0) }
+    var refreshKey by remember { mutableIntStateOf(0) }
     val triggerAcceptedRefresh: () -> Unit = {
         refreshKey++
     }

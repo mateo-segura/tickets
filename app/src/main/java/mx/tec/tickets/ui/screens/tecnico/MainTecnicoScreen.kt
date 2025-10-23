@@ -32,6 +32,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -66,7 +67,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
     var selectedDateSort by remember {mutableStateOf<String>("DESC")}
 
     // 1. Create the Refresh State (key)
-    var acceptedRefreshKey by remember { mutableStateOf(0) }
+    var acceptedRefreshKey by remember { mutableIntStateOf(0) }
 
     // 2. Define the action to trigger a refresh
     val triggerAcceptedRefresh: () -> Unit = {

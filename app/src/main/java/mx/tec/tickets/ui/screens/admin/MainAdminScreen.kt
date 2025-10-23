@@ -33,6 +33,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,7 +65,7 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
     var selectedPriority by remember {mutableStateOf<String?>(null)}
     var selectedDateSort by remember {mutableStateOf<String>("DESC")}
 
-    var acceptedRefreshKey by remember { mutableStateOf(0) }
+    var acceptedRefreshKey by remember { mutableIntStateOf(0) }
     val triggerAcceptedRefresh: () -> Unit = {
         acceptedRefreshKey++
     }
@@ -160,7 +161,11 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
                     AdminTicketList(
                         navController = navController,
                         userID = userID,
-                        token = token
+                        token = token,
+                        acceptedRefreshKey,
+                        selectedCategory,
+                        selectedPriority,
+                        selectedDateSort
                     )
                 } else {
 
@@ -168,6 +173,7 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
             }
 
             // Espacio de tickets Mis Tickets
+            /*
             Column {
                 MesaTicketList(
                     navController,
@@ -180,6 +186,7 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
                     isClosed = false
                 )
             }
+            */
 
 
 

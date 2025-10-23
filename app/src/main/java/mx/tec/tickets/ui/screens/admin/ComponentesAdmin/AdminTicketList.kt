@@ -20,13 +20,25 @@ import org.json.JSONArray
 fun AdminTicketList(
     navController: NavController,
     userID: Int,
-    token: String
+    token: String,
+    refreshKey: Int,
+    selectedCategory: String?,
+    selectedPriority: String?,
+    selectedDateSort: String
 ) {
     val context = LocalContext.current
     var tickets by remember { mutableStateOf(listOf<CommonTicket>()) }
 
-    LaunchedEffect(Unit) {
-        fetchTicketsForAdmin(context, token) { tickets = it }
+    LaunchedEffect(refreshKey) {
+        fetchTicketsForAdmin(
+            context,
+            token,
+            selectedCategory,
+            selectedPriority,
+            selectedDateSort
+        ) { fetchedTickets ->
+            tickets = fetchedTickets
+        }
     }
 
     LazyColumn(modifier = Modifier.fillMaxSize()) {
@@ -44,13 +56,39 @@ fun AdminTicketList(
 private fun fetchTicketsForAdmin(
     context: Context,
     token: String,
+    category: String?,
+    priority: String?,
+    dateSort: String,
     onResult: (List<CommonTicket>) -> Unit
 ) {
     val list = mutableListOf<CommonTicket>()
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/tickets"
+    val baseUrl = "http://10.0.2.2:3000/tickets"
+
+    val metodo = Request.Method.GET
+
+    val queryParams = mutableListOf<String>()
+
+    category?.let{
+        queryParams.add("category=$it")
+    }
+
+    priority?.let{
+        queryParams.add("priority=$it")
+    }
+
+    queryParams.add("sort_date=$dateSort")
+
+    val url = if(queryParams.isNotEmpty()){
+        "$baseUrl?${queryParams.joinToString ("&")}"
+    } else {
+        baseUrl
+    }
+
+    Log.d("API_URL", "Fetching accepted tickets from: $url")
 
     val listener = Response.Listener<JSONArray> { response ->
+        Log.d("API_RESPONSE", "Filtered Tickets Received: ${response.toString()}")
         try {
             for (i in 0 until response.length()) {
                 val o = response.getJSONObject(i)
@@ -73,6 +111,11 @@ private fun fetchTicketsForAdmin(
         } catch (e: Exception) {
             Log.e("AdminTicketList", "Parse error: ${e.message}")
         }
+
+        if (response.length() == 0) {
+            Log.w("API_RESPONSE", "Server returned 0 tickets for the current filter.")
+        }
+
         onResult(list)
     }
 
