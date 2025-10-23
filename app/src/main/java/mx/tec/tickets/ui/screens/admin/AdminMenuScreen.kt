@@ -7,6 +7,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Lock
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
@@ -19,6 +20,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavController
+import mx.tec.tickets.ui.screens.TicketsCerrados
 import mx.tec.tickets.ui.screens.TicketsCerrados
 
 // Import que ya existía y NO toco
@@ -51,6 +53,12 @@ fun AdminMenuScreen(navController: NavController, token: String, role: String, u
                 NavigationBarItem(
                     selected = selectedOption == 2,
                     onClick = { selectedOption = 2 },
+                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
+                    label = { Text("Notificaciones") }
+                )
+                NavigationBarItem(
+                    selected = selectedOption == 3,
+                    onClick = { selectedOption = 3 },
                     icon = { Icon(Icons.Default.AccountCircle, contentDescription = "Usuarios") },
                     label = { Text("Usuarios") }
                 )
@@ -65,7 +73,8 @@ fun AdminMenuScreen(navController: NavController, token: String, role: String, u
             when (selectedOption) {
                 0 -> HomeScreen(navController, token, role, userID)
                 1 -> TecnicoClosedTicketsScreen(navController, token, role, userID)
-                2 -> NotificationsScreen(navController, token, role, userID) // mantiene el flujo original
+                2 -> UsersScreen() // mantiene el flujo original
+                3 -> NotificationsScreen(navController, token, role, userID) // mantiene el flujo original
             }
         }
     }
@@ -82,11 +91,15 @@ fun TecnicoClosedTicketsScreen(navController: NavController, token: String, role
 }
 
 @Composable
-fun NotificationsScreen(navController: NavController, token: String, role: String, userID: Int) {
+fun UsersScreen () {
     // CAMBIO: antes se llamaba a MainAdminUserScreen (vieja).
     // Ahora pintamos tu NUEVA lista de usuarios sin tocar nada más.
-    MainAdminUserScreenNew(navController = navController, token = token)
 
     // Si quieres mantener la vieja como fallback por cualquier cosa, déjala comentada:
     // MainAdminUserScreen(navController, token, role, userID)
+}
+@Composable
+fun NotificationsScreen (navController: NavController, token: String, role: String, userID: Int){
+    MainAdminUserScreenNew(navController = navController, token = token)
+
 }
