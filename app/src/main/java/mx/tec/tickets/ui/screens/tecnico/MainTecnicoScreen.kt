@@ -126,7 +126,7 @@ fun MainTecnicoScreen(navController: NavController,token: String,role: String,us
                 // Filtro de Categoria
                 FilterDropDown(
                     label = "Categoria",
-                    options = listOf("HARDWARE", "SOFTWARE", "NETWORK", "TODOS"),
+                    options = listOf("HARDWARE", "SOFTWARE", "NETWORK", "OTRO", "TODOS"),
                     currentValue = selectedCategory,
                     onValueSelected = { newValue ->
                         selectedCategory = if (newValue == "TODOS") null else newValue
