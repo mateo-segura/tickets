@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens.admin.users
+package mx.tec.tickets.ui.screens.admin.Users
 
 import android.widget.Toast
 import androidx.compose.foundation.background

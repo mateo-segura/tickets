@@ -49,6 +49,7 @@ import com.android.volley.toolbox.Volley
 import mx.tec.chat.ChatScreen
 import mx.tec.tickets.model.Ticket
 import mx.tec.tickets.ui.theme.drawColoredShadow
+import org.json.JSONObject
 
 // Vista de interior del ticket
 
@@ -212,7 +213,7 @@ fun VistaInteriorTicket() {
                         }
 
                     }
-                    SpinnerDropDown("Estado", initState) { initState = it }
+                    //SpinnerDropDown("Estado", initState) { initState = it }
                 }
 
                 Column(
@@ -295,7 +296,10 @@ fun VistaInteriorTicket() {
 fun SpinnerDropDown(
     texto: String,
     seleccion: String,
-    onSeleccion: (String) -> Unit
+    onSeleccion: (String) -> Unit,
+    ticketId: Int? = null,
+    context: Context? = null,
+    token: String? = null
 ){
     val estado = listOf("Abierto", "En proceso", "Cerrado")
     var abierto by remember { mutableStateOf(false)}
@@ -318,18 +322,80 @@ fun SpinnerDropDown(
             expanded = abierto,
             onDismissRequest = { abierto = false }
         ) {
-            estado.forEach{ estado ->
+            estado.forEach{ estadoItem ->
                 DropdownMenuItem(
-                    text = { Text(estado) },
+                    text = { Text(estadoItem) },
                     onClick = {
-                        onSeleccion(estado)
+                        onSeleccion(estadoItem)
                         abierto = false
+                        
+                        // Si tenemos ticketId, context y token, actualizamos el estado en el servidor
+                        if (ticketId != null && context != null && token != null) {
+                            updateTicketStatus(context, ticketId, estadoItem, token)
+                        }
                     }
                 )
             }
         }
     }
 
+}
+
+// Función para actualizar el estado del ticket
+fun updateTicketStatus(
+    context: Context,
+    ticketId: Int,
+    status: String,
+    token: String,
+    onSuccess: (() -> Unit)? = null,
+    onError: ((String) -> Unit)? = null
+) {
+    val url = "http://10.0.2.2:3000/tickets/asigEstado"
+    val queue = Volley.newRequestQueue(context)
+    
+    // Mapear el estado visual al formato esperado por el backend
+    val statusBackend = when(status) {
+        "Abierto" -> "ABIERTO"
+        "En proceso" -> "EN_PROCESO"
+        "Cerrado" -> "CERRADO"
+        else -> "ABIERTO"
+    }
+    
+    // Crear el JSON body
+    val jsonBody = JSONObject().apply {
+        put("id", ticketId)
+        put("status", statusBackend)
+    }
+    
+    val request = object : JsonObjectRequest(
+        Request.Method.PATCH,
+        url,
+        jsonBody,
+        { response ->
+            try {
+                Log.d("UpdateTicketStatus", "Success: ${response.getString("exito")}")
+                onSuccess?.invoke()
+            } catch (e: Exception) {
+                Log.e("UpdateTicketStatus", "Parse error: ${e.message}")
+                onError?.invoke("Error al procesar la respuesta")
+            }
+        },
+        { error ->
+            val errorMsg = error.message ?: "Error desconocido"
+            val statusCode = error.networkResponse?.statusCode
+            Log.e("UpdateTicketStatus", "Error [$statusCode]: $errorMsg")
+            onError?.invoke(errorMsg)
+        }
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            return hashMapOf(
+                "Authorization" to "Bearer $token",
+                "Content-Type" to "application/json"
+            )
+        }
+    }
+    
+    queue.add(request)
 }
 
 /*

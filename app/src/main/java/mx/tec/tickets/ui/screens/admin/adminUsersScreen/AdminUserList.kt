@@ -38,7 +38,7 @@ fun AdminUserList(navController: NavController, userID: Int,token:String) {
         //.statusBarsPadding()
         // Status bars padding estaba causando padding conflictivo
     ) {
-        items(Tickets) { ticket -> AdminUserCard(ticket, navController, userID)
+        items(Tickets) { ticket -> AdminUserCard(ticket, navController, userID, token)
         }
     }
 }

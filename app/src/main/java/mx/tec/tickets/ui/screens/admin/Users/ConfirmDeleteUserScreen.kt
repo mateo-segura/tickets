@@ -1,4 +1,4 @@
-package mx.tec.tickets.ui.screens.admin.users
+package mx.tec.tickets.ui.screens.admin.Users
 
 import android.content.Context
 import android.widget.Toast

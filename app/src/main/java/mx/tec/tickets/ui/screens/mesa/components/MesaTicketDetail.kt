@@ -44,14 +44,22 @@ import mx.tec.tickets.ui.screens.SpinnerDropDown
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
 @Composable
-fun MesaTicketDetail(acceptedticket: String, navController: NavController) {
+fun MesaTicketDetail(acceptedticket: String, navController: NavController, token: String = "") {
     val nonAcceptedTicketJson = Gson().fromJson(acceptedticket, CommonTicket::class.java)
 
     /*Importado de TicketScreen.kt (porque ya obteniamos la info del ticket en este componente y la navegación ya estaba implementada acá)*/
     val context = LocalContext.current
     var editBoxSize by remember { mutableStateOf(0.dp)}
     var infoColumnSize by remember { mutableStateOf(0.dp)}
-    var initState by remember { mutableStateOf("Abierto") }
+    
+    // Mapear el estado del backend al formato visual
+    val estadoInicial = when(nonAcceptedTicketJson?.status) {
+        "ABIERTO" -> "Abierto"
+        "EN_PROCESO" -> "En proceso"
+        "CERRADO" -> "Cerrado"
+        else -> "Abierto"
+    }
+    var initState by remember { mutableStateOf(estadoInicial) }
     val density = LocalDensity.current
     // var titulo by remember { mutableStateOf("Cargando...")}
     //val scrollState = rememberScrollState()
@@ -206,7 +214,14 @@ fun MesaTicketDetail(acceptedticket: String, navController: NavController) {
                             }
 
                         }
-                        SpinnerDropDown("Estado", initState) { initState = it }
+                        SpinnerDropDown(
+                            texto = "Estado",
+                            seleccion = initState,
+                            onSeleccion = { initState = it },
+                            ticketId = nonAcceptedTicketJson?.id,
+                            context = context,
+                            token = token
+                        )
                     }
 
                     Column(

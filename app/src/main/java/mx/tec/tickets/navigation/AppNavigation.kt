@@ -16,11 +16,9 @@ import mx.tec.tickets.ui.screens.tecnico.components.NotificationDetail
 import mx.tec.tickets.ui.screens.tecnico.components.NotificationList
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketDetail
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoNonAcceptedTicketDetail
-
-
 import mx.tec.tickets.ui.screens.admin.MainAdminUserScreenNew
-import mx.tec.tickets.ui.screens.admin.users.ConfirmDeleteUserScreen
-import mx.tec.tickets.ui.screens.admin.users.RecoverPasswordScreen
+import mx.tec.tickets.ui.screens.admin.Users.ConfirmDeleteUserScreen
+import mx.tec.tickets.ui.screens.admin.Users.RecoverPasswordScreen
 
 @Composable
 fun AppNavigation() {
@@ -48,21 +46,34 @@ fun AppNavigation() {
             TecnicoMenuScreen(navController, token, role, userID)
         }
         composable(
-            route = "detailnonaccepted/{nonacceptedticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
-            arguments = listOf(navArgument("nonacceptedticket") { type = NavType.StringType }),
+            route = "detailnonaccepted/{nonacceptedticket}?token={token}",
+            arguments = listOf(
+                navArgument("nonacceptedticket") { type = NavType.StringType },
+                navArgument("token") { defaultValue = ""; type = NavType.StringType }
+            ),
         ) { backStackEntry ->
             val nonacceptedticket = backStackEntry.arguments?.getString("nonacceptedticket")
+            val token = backStackEntry.arguments?.getString("token") ?: ""
             TecnicoNonAcceptedTicketDetail(
                 nonacceptedticket = nonacceptedticket ?: "",
-                navController
+                navController,
+                token = token
             )
         }
         composable(
-            route = "detailaccepted/{acceptedticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
-            arguments = listOf(navArgument("acceptedticket") { type = NavType.StringType }),
+            route = "detailaccepted/{acceptedticket}?token={token}",
+            arguments = listOf(
+                navArgument("acceptedticket") { type = NavType.StringType },
+                navArgument("token") { defaultValue = ""; type = NavType.StringType }
+            ),
         ) { backStackEntry ->
             val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
-            TecnicoAcceptedTicketDetail(acceptedticket = acceptedticket ?: "", navController)
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            TecnicoAcceptedTicketDetail(
+                acceptedticket = acceptedticket ?: "",
+                navController,
+                token = token
+            )
         }
 
         // Notificaciones
@@ -109,11 +120,19 @@ fun AppNavigation() {
             MesaMenuScreen(navController, token, role, userID)
         }
         composable(
-            route = "detailcommon/{acceptedticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
-            arguments = listOf(navArgument("acceptedticket") { type = NavType.StringType }),
+            route = "detailcommon/{acceptedticket}?token={token}",
+            arguments = listOf(
+                navArgument("acceptedticket") { type = NavType.StringType },
+                navArgument("token") { defaultValue = ""; type = NavType.StringType }
+            ),
         ) { backStackEntry ->
             val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
-            MesaTicketDetail(acceptedticket = acceptedticket ?: "", navController)
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+            MesaTicketDetail(
+                acceptedticket = acceptedticket ?: "",
+                navController,
+                token = token
+            )
         }
         // rutas de admin
         composable(

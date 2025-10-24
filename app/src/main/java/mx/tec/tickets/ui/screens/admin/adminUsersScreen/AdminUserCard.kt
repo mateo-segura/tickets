@@ -28,7 +28,7 @@ import com.google.gson.Gson
 import mx.tec.tickets.model.CommonTicket
 
 @Composable
-fun AdminUserCard(nonAcceptedTicket: CommonTicket, navController: NavController,userID:Int) {
+fun AdminUserCard(nonAcceptedTicket: CommonTicket, navController: NavController, userID:Int, token: String = "") {
     val padding = 10.dp
     val fontSizeNormal = 11.sp
     val fontSizeTitle = 14.sp
@@ -39,7 +39,7 @@ fun AdminUserCard(nonAcceptedTicket: CommonTicket, navController: NavController,
             .padding(10.dp)
             .clickable {
                 val jsonTicket = Gson().toJson(nonAcceptedTicket)
-                navController.navigate("detailcommon/${jsonTicket}")
+                navController.navigate("detailcommon/${jsonTicket}?token=$token")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         colors = CardDefaults.cardColors(

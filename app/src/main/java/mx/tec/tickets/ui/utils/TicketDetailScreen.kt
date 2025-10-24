@@ -205,7 +205,12 @@ package mx.tec.tickets.ui.utils
                                 }
 
                             }
-                            SpinnerDropDown("Estado", initState) { initState = it }
+                            SpinnerDropDown(
+                                texto = "Estado",
+                                seleccion = initState,
+                                onSeleccion = { initState = it }
+                                // El modelo Ticket no tiene campo 'id', por lo que no se actualiza en el servidor
+                            )
                         }
 
                         Column(
