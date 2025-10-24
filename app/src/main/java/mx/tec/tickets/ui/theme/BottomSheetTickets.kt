@@ -127,7 +127,7 @@ fun BottomSheetTickets(
                     Column(modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally){
                         Button(
-                            onClick = { navController.navigate("detailnonaccepted/${jsonTicket}") },
+                            onClick = { navController.navigate("detailnonaccepted/${jsonTicket}?token=$jwtToken") },
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = Color.Gray,
                                 contentColor = Color.White
