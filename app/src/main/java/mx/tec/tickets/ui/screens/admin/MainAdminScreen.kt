@@ -134,7 +134,7 @@ fun MainAdminScreen(navController: NavController,token: String,role: String,user
                 // Filtro de Prioridad
                 FilterDropDown(
                     label = "Prioridad",
-                    options = listOf("ALTA", "MEDIA", "BAJA", "TODOS"),
+                    options = listOf("ALTA", "MEDIA", "BAJA", "OTRO", "TODOS"),
                     currentValue = selectedPriority,
                     onValueSelected = { newValue ->
                         selectedPriority = if (newValue == "TODOS") null else newValue
