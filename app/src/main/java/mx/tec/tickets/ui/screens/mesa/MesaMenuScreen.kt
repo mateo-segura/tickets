@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import mx.tec.tickets.ui.screens.TicketsCerrados
+import mx.tec.tickets.ui.screens.tecnico.MainNotificationScreen
 
 //viewmodel area compartida de todas las pantallas
 @Composable
@@ -62,7 +63,7 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String,userI
             when (selectedOption) {
                 0 -> MesaHomeScreen(navController,token,role,userID)
                 1 -> MesaClosedTicketsScreen(navController, token, role, userID)
-                2 -> MesaNotificationsScreen(navController)
+                2 -> MesaNotificationsScreen(navController, userID)
             }
         }
     }
@@ -81,5 +82,6 @@ fun MesaClosedTicketsScreen(navController: NavController, token: String, role: S
 }
 
 @Composable
-fun MesaNotificationsScreen(navController:NavController) {
+fun MesaNotificationsScreen(navController:NavController, userID: Int) {
+    MainNotificationScreen(navController, userID)
 }

@@ -31,6 +31,7 @@ import mx.tec.tickets.ui.screens.tecnico.MainTecnicoScreen
 
 // CAMBIO: import de tu NUEVA pantalla de usuarios
 import mx.tec.tickets.ui.screens.admin.MainAdminUserScreenNew
+import mx.tec.tickets.ui.screens.tecnico.MainNotificationScreen
 
 @Composable
 fun AdminMenuScreen(navController: NavController, token: String, role: String, userID: Int) {
@@ -73,7 +74,7 @@ fun AdminMenuScreen(navController: NavController, token: String, role: String, u
             when (selectedOption) {
                 0 -> HomeScreen(navController, token, role, userID)
                 1 -> TecnicoClosedTicketsScreen(navController, token, role, userID)
-                2 -> UsersScreen() // mantiene el flujo original
+                2 -> UsersScreen(navController, userID) // mantiene el flujo original
                 3 -> NotificationsScreen(navController, token, role, userID) // mantiene el flujo original
             }
         }
@@ -91,12 +92,8 @@ fun TecnicoClosedTicketsScreen(navController: NavController, token: String, role
 }
 
 @Composable
-fun UsersScreen () {
-    // CAMBIO: antes se llamaba a MainAdminUserScreen (vieja).
-    // Ahora pintamos tu NUEVA lista de usuarios sin tocar nada más.
-
-    // Si quieres mantener la vieja como fallback por cualquier cosa, déjala comentada:
-    // MainAdminUserScreen(navController, token, role, userID)
+fun UsersScreen (navController: NavController, userID: Int) {
+    MainNotificationScreen(navController, userID)
 }
 @Composable
 fun NotificationsScreen (navController: NavController, token: String, role: String, userID: Int){

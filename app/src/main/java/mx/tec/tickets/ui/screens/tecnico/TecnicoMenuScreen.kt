@@ -87,6 +87,6 @@ fun NotificationsScreen(
     navController: NavController,
     userID: Int
 ) {
-    navController.navigate("mainnotificationscreen/$userID")
+    MainNotificationScreen(navController, userID)
 }
 
