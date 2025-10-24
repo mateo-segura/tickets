@@ -48,7 +48,7 @@ fun AdminMenuScreen(navController: NavController, token: String, role: String, u
                     selected = selectedOption == 1,
                     onClick = { selectedOption = 1 },
                     icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
-                    label = { Text("Tickets Cerrados") }
+                    label = { Text("Cerrados") }
                 )
                 NavigationBarItem(
                     selected = selectedOption == 2,

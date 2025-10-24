@@ -39,18 +39,18 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String,userI
                     icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                     label = { Text("Inicio") }
                 )
-                NavigationBarItem(
-                    selected = selectedOption == 1,
-                    onClick = { selectedOption = 1 },
-                    icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
-                    label = { Text("Tickets Cerrados") }
-                )
 //                NavigationBarItem(
-//                    selected = selectedOption == 2,
-//                    onClick = { selectedOption = 2 },
-//                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
-//                    label = { Text("Notificaciones") }
+//                    selected = selectedOption == 1,
+//                    onClick = { selectedOption = 1 },
+//                    icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
+//                    label = { Text("Tickets Cerrados") }
 //                )
+                NavigationBarItem(
+                    selected = selectedOption == 2,
+                    onClick = { selectedOption = 2 },
+                    icon = { Icon(Icons.Default.Notifications, contentDescription = "Settings") },
+                    label = { Text("Notificaciones") }
+                )
             }
         }
     ) { padding ->

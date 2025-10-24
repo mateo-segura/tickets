@@ -40,12 +40,12 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String,us
                         icon = { Icon(Icons.Default.Home, contentDescription = "Home") },
                         label = { Text("Inicio") }
                     )
-                    NavigationBarItem(
-                        selected = selectedOption == 1,
-                        onClick = { selectedOption = 1 },
-                        icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
-                        label = { Text("Tickets Cerrados") }
-                    )
+//                    NavigationBarItem(
+//                        selected = selectedOption == 1,
+//                        onClick = { selectedOption = 1 },
+//                        icon = { Icon(Icons.Default.Lock, contentDescription = "Tickets Cerrados") },
+//                        label = { Text("Tickets Cerrados") }
+//                    )
                     NavigationBarItem(
                         selected = selectedOption == 2,
                        onClick = { selectedOption = 2 },
