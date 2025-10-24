@@ -11,8 +11,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import mx.tec.tickets.model.CommonTicket
 import mx.tec.tickets.ui.components.TicketAdminMenu
-import mx.tec.tickets.ui.screens.mesa.components.MesaTicketCard   // ← IMPORT CORRECTO
-
+import mx.tec.tickets.ui.screens.mesa.components.MesaTicketCard
 
 @Composable
 fun AdminTicketItem(
@@ -22,9 +21,11 @@ fun AdminTicketItem(
     token: String
 ) {
     Box(modifier = Modifier.fillMaxWidth()) {
-        // Llamada POSICIONAL (evita fallos por nombres distintos)
+
+        // Reutiliza la misma tarjeta que usa Mesa
         MesaTicketCard(ticket, navController, userID, token)
 
+        // Menú de tres puntitos (solo visible para admin)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -32,7 +33,11 @@ fun AdminTicketItem(
                 .zIndex(1f),
             contentAlignment = Alignment.TopEnd
         ) {
-            TicketAdminMenu()
+            TicketAdminMenu(
+                navController = navController,
+                ticketId = ticket.id.toInt(),  // usa el ID real del ticket
+                modifier = Modifier
+            )
         }
     }
 }

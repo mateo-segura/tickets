@@ -1,5 +1,6 @@
 package mx.tec.tickets.navigation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -17,8 +18,23 @@ import mx.tec.tickets.ui.screens.tecnico.components.NotificationList
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoAcceptedTicketDetail
 import mx.tec.tickets.ui.screens.tecnico.components.TecnicoNonAcceptedTicketDetail
 import mx.tec.tickets.ui.screens.admin.MainAdminUserScreenNew
+import mx.tec.tickets.ui.screens.admin.ModifyCategoryPriorityDialog
+import mx.tec.tickets.ui.screens.admin.ReassignUserDialog
+import mx.tec.tickets.ui.screens.admin.TechnicianItem
 import mx.tec.tickets.ui.screens.admin.Users.ConfirmDeleteUserScreen
 import mx.tec.tickets.ui.screens.admin.Users.RecoverPasswordScreen
+import mx.tec.tickets.model.ApiClient
+import mx.tec.tickets.model.TicketApi
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import mx.tec.tickets.model.AssignTicketRequest
+import mx.tec.tickets.model.PatchCategoryRequest
+import mx.tec.tickets.model.PatchPriorityRequest
+import mx.tec.tickets.model.UserApi
+
 
 @Composable
 fun AppNavigation() {
@@ -98,10 +114,6 @@ fun AppNavigation() {
             val userID = backStackEntry.arguments?.getInt("userid") ?: 0
             MainNotificationScreen(navController, userID)
         }
-
-
-
-
 
 
         // rutas de mesa
@@ -193,7 +205,221 @@ fun AppNavigation() {
         }
 // ===== FIN RUTAS NUEVAS =====
 
+        // ===== RUTAS NUEVAS PARA LOS TRES PUNTITOS =====
+
+        composable(
+            route = "modifyCategoryPriority/{ticketId}",
+            arguments = listOf(navArgument("ticketId") { type = NavType.IntType })
+        ) { backStackEntry ->
+            val ticketId = backStackEntry.arguments?.getInt("ticketId") ?: 0
+
+            // Token heredado del stack (ajusta si ya lo pasas por query)
+            val token = remember {
+                "Bearer " + (
+                        backStackEntry.savedStateHandle.get<String>("token")
+                            ?: navController.previousBackStackEntry?.arguments?.getString("token")
+                            ?: ""
+                        )
+            }
+
+            val service = remember { ApiClient.retrofit.create(TicketApi::class.java) }
+            val scope = rememberCoroutineScope()
+
+            var title by remember { mutableStateOf("Ticket #$ticketId") }
+            var desc  by remember { mutableStateOf("") }
+            var initCat by remember { mutableStateOf<String?>(null) }   // valor actual en DB
+            var initPri by remember { mutableStateOf<String?>(null) }
+
+            // Opciones visibles en UI (humanas), pero OJO: backend exige MAYÚSCULAS
+            val categoriesUi = listOf("Hardware", "Software", "Redes", "Otro")
+            val prioritiesUi = listOf("Baja", "Media", "Alta")
+
+            // Fetch inicial
+            LaunchedEffect(ticketId) {
+                scope.launch(Dispatchers.IO) {
+                    try {
+                        val resp = service.getTicketById(ticketId, token).execute()
+                        if (resp.isSuccessful) {
+                            resp.body()?.let { t ->
+                                withContext(Dispatchers.Main) {
+                                    title = t.title
+                                    desc  = t.description
+                                    initCat = t.category        // llega ya en mayúsculas del backend
+                                    initPri = t.priority
+                                }
+                            }
+                        } else {
+                            Log.e("ModifyCP", "GET failed: ${resp.code()} ${resp.message()}")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("ModifyCP", "GET exception: ${e.message}", e)
+                    }
+                }
+            }
+
+            // Helpers: mapear UI -> enum backend
+            fun mapCategoryToEnum(ui: String): String = when (ui.trim().lowercase()) {
+                "hardware" -> "HARDWARE"
+                "software" -> "SOFTWARE"
+                "red", "redes" -> "REDES"
+                "otro" -> "OTRO"
+                else -> ui.uppercase()
+            }
+            fun mapPriorityToEnum(ui: String): String = when (ui.trim().lowercase()) {
+                "baja" -> "BAJA"
+                "media" -> "MEDIA"
+                "alta" -> "ALTA"
+                else -> ui.uppercase()
+            }
+
+            ModifyCategoryPriorityDialog(
+                ticketTitle = title,
+                description = desc,
+                categories = categoriesUi,
+                priorities = prioritiesUi,
+                selectedCategoryInitial = initCat?.replace('_',' ')?.lowercase()?.replaceFirstChar { it.titlecase() }, // opcional: maquilla a UI
+                selectedPriorityInitial = initPri?.lowercase()?.replaceFirstChar { it.titlecase() },
+                onConfirm = { newCatUi, newPriUi ->
+                    scope.launch(Dispatchers.IO) {
+                        try {
+                            val newCat = mapCategoryToEnum(newCatUi)
+                            val newPri = mapPriorityToEnum(newPriUi)
+
+                            // Evita parches innecesarios
+                            val needCat = newCat != (initCat ?: "")
+                            val needPri = newPri != (initPri ?: "")
+
+                            // Llama solo lo que cambió, y en orden independiente
+                            if (needCat) {
+                                val r1 = service.patchCategory(token,
+                                    PatchCategoryRequest(ticketId, newCat)
+                                ).execute()
+                                if (!r1.isSuccessful) {
+                                    Log.e("ModifyCP", "PATCH category failed: ${r1.code()} ${r1.message()}")
+                                    // aquí podrías mostrar Snackbar/Toast si quieres
+                                } else {
+                                    initCat = newCat
+                                }
+                            }
+                            if (needPri) {
+                                val r2 = service.patchPriority(token,
+                                    PatchPriorityRequest(ticketId, newPri)
+                                ).execute()
+                                if (!r2.isSuccessful) {
+                                    Log.e("ModifyCP", "PATCH priority failed: ${r2.code()} ${r2.message()}")
+                                } else {
+                                    initPri = newPri
+                                }
+                            }
+
+                            withContext(Dispatchers.Main) { navController.popBackStack() }
+                        } catch (e: Exception) {
+                            Log.e("ModifyCP", "PATCH exception: ${e.message}", e)
+                        }
+                    }
+                },
+                onDismiss = { navController.popBackStack() }
+            )
+        }
+
+        composable(
+            route = "reassignUser/{ticketId}",
+            arguments = listOf(
+                navArgument("ticketId") { type = NavType.IntType }
+            )
+        ) { backStackEntry ->
+            val ticketId = backStackEntry.arguments?.getInt("ticketId") ?: 0
+
+            // Token heredado del stack (ajusta si ya lo pasas por query)
+            val token = remember {
+                "Bearer " + (
+                        backStackEntry.savedStateHandle.get<String>("token")
+                            ?: navController.previousBackStackEntry?.arguments?.getString("token")
+                            ?: ""
+                        )
+            }
+
+            val ticketService = remember { ApiClient.retrofit.create(TicketApi::class.java) }
+            val userService   = remember { ApiClient.retrofit.create(UserApi::class.java) }
+            val scope = rememberCoroutineScope()
+
+            // Estado UI
+            var title by remember { mutableStateOf("Ticket #$ticketId") }
+            var desc  by remember { mutableStateOf("Selecciona técnico para reasignar") }
+            var technicians by remember { mutableStateOf(listOf<TechnicianItem>()) }
+
+            // 1) Cargar datos del ticket
+            LaunchedEffect(ticketId) {
+                scope.launch(Dispatchers.IO) {
+                    try {
+                        val resp = ticketService.getTicketById(ticketId, token).execute()
+                        if (resp.isSuccessful) {
+                            resp.body()?.let { t ->
+                                withContext(Dispatchers.Main) {
+                                    title = t.title.ifBlank { "Ticket #$ticketId" }
+                                    desc  = t.description.ifBlank { "Selecciona técnico para reasignar" }
+                                }
+                            }
+                        } else {
+                            Log.e("Reassign", "GET ticket failed: ${resp.code()} ${resp.message()}")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("Reassign", "GET ticket exception: ${e.message}", e)
+                    }
+                }
+            }
+
+            // 2) Cargar lista de técnicos
+            LaunchedEffect(Unit) {
+                scope.launch(Dispatchers.IO) {
+                    try {
+                        val resp = userService.getTechnicians(token).execute()
+                        if (resp.isSuccessful) {
+                            val list = resp.body().orEmpty().map {
+                                TechnicianItem(
+                                    id = it.id,
+                                    name = it.username,
+                                    assignedCount = 0 // tu endpoint no devuelve conteo; lo dejamos en 0
+                                )
+                            }
+                            withContext(Dispatchers.Main) { technicians = list }
+                        } else {
+                            Log.e("Reassign", "GET technicians failed: ${resp.code()} ${resp.message()}")
+                        }
+                    } catch (e: Exception) {
+                        Log.e("Reassign", "GET technicians exception: ${e.message}", e)
+                    }
+                }
+            }
+
+            // 3) Mostrar diálogo y hacer PATCH al asignar
+            ReassignUserDialog(
+                ticketTitle = title,
+                description = desc,
+                technicians = technicians,
+                onAssign = { userId ->
+                    scope.launch(Dispatchers.IO) {
+                        try {
+                            val body = AssignTicketRequest(ticket_id = ticketId, user_id = userId)
+                            val resp = userService.assignTicket(token, body).execute()
+                            if (resp.isSuccessful) {
+                                withContext(Dispatchers.Main) { navController.popBackStack() }
+                            } else {
+                                Log.e("Reassign", "PATCH assign failed: ${resp.code()} ${resp.message()}")
+                            }
+                        } catch (e: Exception) {
+                            Log.e("Reassign", "PATCH assign exception: ${e.message}", e)
+                        }
+                    }
+                },
+                onDismiss = { navController.popBackStack() }
+            )
+        }
+        // ===== FIN RUTAS NUEVAS =====
+
 
 
     }
 }
+
+
