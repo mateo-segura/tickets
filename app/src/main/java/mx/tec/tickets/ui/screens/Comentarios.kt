@@ -1,6 +1,8 @@
 package mx.tec.chat
+import android.content.Context
 import mx.tec.tickets.ui.screens.UploadButton
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.animateColorAsState
@@ -17,6 +19,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import mx.tec.tickets.model.ChatRepository.fetchMessagesByTicket
+import mx.tec.tickets.model.ChatRepository.sendMessage
+import mx.tec.tickets.ui.screens.FileScreen
 import mx.tec.tickets.ui.screens.downloadFile
 import mx.tec.tickets.ui.screens.UploadButton
 import mx.tec.tickets.ui.screens.downloadFile
@@ -27,7 +32,9 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             TicketsTheme {
-                ChatScreen()
+
+
+
             }
         }
     }
@@ -117,7 +124,141 @@ fun Conversation(messages: List<Message>, modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun ChatScreen(ticketId: Int = 1, userId: Int = 2) {
+fun ChatScreen(
+    context: Context = LocalContext.current,
+    ticketId: Int,
+    userId: Int,
+    token: String // <-- asegúrate de pasar el token aquí
+) {
+    val messages = remember { mutableStateListOf<Message>() }
+    var currentText by remember { mutableStateOf("") }
+    val coroutineScope = rememberCoroutineScope()
+
+    // Cargar mensajes al inicio
+    LaunchedEffect(ticketId,userId) {
+        fetchMessagesByTicket(
+            context = context,
+            ticketId = ticketId,
+            userId,
+            token = token
+        ) { fetchedMessages ->
+            messages.clear()
+            messages.addAll(fetchedMessages)
+        }
+    }
+
+    // UI del chat
+    Scaffold(
+        modifier = Modifier.padding(WindowInsets.navigationBars.asPaddingValues()),
+        bottomBar = {
+            Row(
+                modifier = Modifier
+                    .padding(8.dp)
+                    .fillMaxWidth()
+            ) {
+                TextField(
+                    value = currentText,
+                    onValueChange = { currentText = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Escribe tu mensaje...") }
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // --- BOTÓN DE SUBIR ARCHIVO ---
+                UploadButton(
+                    ticketId = ticketId,
+                    senderUserId = userId,
+                    onFileSent = { fileName, fileId ->
+                        // Esto se ejecuta cuando el archivo se sube con éxito
+
+                        val fileBody = "📎 $fileName"
+
+                        // 1. Añadimos localmente para que la UI sea rápida
+                        messages.add(
+                            0,
+                            Message(
+                                author = "Tú",
+                                body = fileBody,
+                                isUser = true,
+                                fileId = fileId.toString()
+                            )
+                        )
+
+                        // 2. AHORA SÍ: Guardamos el mensaje en la base de datos
+                        sendMessage(
+                            context = context,
+                            ticketId = ticketId,
+                            senderUserId = userId,
+                            body = fileBody, // "📎 nombre_archivo.jpg"
+                            token = token,
+                            fileId = fileId, // <-- Pasamos el ID del archivo
+                            onSuccess = {
+                                Log.d("ChatScreen", "Mensaje de archivo guardado en DB")
+                            },
+                            onError = { errorMsg ->
+                                Log.e("ChatScreen", "Error al guardar mensaje de archivo: $errorMsg")
+                            }
+                        )
+                    }
+                )
+                // --- FIN DEL BOTÓN DE ARCHIVO ---
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                // Botón de envío de TEXTO (usa el mismo sendMessage, pero sin fileId)
+                Button(
+                    onClick = {
+                        if (currentText.isNotBlank()) {
+                            val textToSend = currentText
+                            currentText = ""
+
+                            // Mostrar mensaje localmente
+                            messages.add(
+                                0,
+                                Message(
+                                    author = "Tú",
+                                    body = textToSend,
+                                    isUser = true
+                                )
+                            )
+
+                            // Enviar mensaje al servidor (sin fileId)
+                            sendMessage(
+                                context = context,
+                                ticketId = ticketId,
+                                senderUserId = userId,
+                                body = textToSend,
+                                token = token,
+                                fileId = null, // <-- No es un archivo
+                                onSuccess = {
+                                    Log.d("ChatScreen", "Mensaje de texto enviado")
+                                },
+                                onError = { errorMsg ->
+                                    Log.e("ChatScreen", "Error al enviar mensaje: $errorMsg")
+                                }
+                            )
+                        }
+                    }
+                ) {
+                    Text("Enviar")
+                }
+            }
+        }
+    ) { paddingValues ->
+        Conversation(
+            messages = messages,
+            modifier = Modifier
+                .padding(bottom = paddingValues.calculateBottomPadding())
+                .fillMaxSize()
+        )
+    }
+}
+
+/*
+@Composable
+fun ChatScreen(ticketId: Int, userId: Int) {
+    FileScreen(ticketId, userId)
 
     val messages = remember { mutableStateListOf<Message>() }
     var currentText by remember { mutableStateOf("") }
@@ -168,6 +309,17 @@ fun ChatScreen(ticketId: Int = 1, userId: Int = 2) {
                     placeholder = { Text("Escribe tu mensaje...") }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
+                //Boton para subir archivos
+                UploadButton(
+                    ticketId = ticketId,
+                    senderUserId = userId,
+                    onFileSent = { fileName, fileId ->
+                        // Mostrar mensaje con archivo subido
+                        messages.add(0, Message("Tú", "📎 $fileName", isUser = true, fileId = fileId.toString()))
+                    }
+                )
+
+
                 Button(
                     onClick = {
                         if (currentText.isNotBlank()) {
@@ -215,7 +367,7 @@ fun ChatScreen(ticketId: Int = 1, userId: Int = 2) {
         )
     }
 }
-
+*/
 
 /* @Composable
 fun ChatScreen() {
@@ -300,7 +452,7 @@ fun ChatScreen() {
     }
 }
 */
-
+/*
 @Preview(showBackground = true)
 @Composable
 fun PreviewChatScreen() {
@@ -308,3 +460,4 @@ fun PreviewChatScreen() {
         ChatScreen()
     }
 }
+*/

@@ -40,10 +40,14 @@ import okhttp3.Request
 import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import kotlinx.coroutines.withContext
+import mx.tec.tickets.model.ApiClient
+import mx.tec.tickets.model.ChatApi
+import mx.tec.tickets.model.MessageRequest
+
 
 
 @Composable
-fun FileScreen() {
+fun FileScreen(ticketId: Int, userId: Int) {
     var selectedFile by remember { mutableStateOf<Uri?>(null) }
     val contexto = LocalContext.current
 
@@ -53,9 +57,13 @@ fun FileScreen() {
         uri?.let { file ->
             selectedFile = file
             // Subir automáticamente después de seleccionar
-            uploadFile(contexto, file) { uploaded ->
+            uploadFile(contexto, file, ticketId, userId) { uploaded, fileName, fileId ->
                 if (uploaded) {
-                    Toast.makeText(contexto, "Archivo cargado correctamente", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        contexto,
+                        "Archivo '$fileName' subido correctamente (ID: $fileId)",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 } else {
                     Toast.makeText(contexto, "Error al subir el archivo", Toast.LENGTH_SHORT).show()
                 }
@@ -69,35 +77,35 @@ fun FileScreen() {
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Row {
-            Button(onClick = { filePicker.launch("*/*")}) {
+            Button(onClick = { filePicker.launch("*/*") }) {
                 Text(text = "Seleccionar")
             }
             Button(
-                onClick = { selectedFile?.let{ file ->
-                    uploadFile(contexto, file){ uploaded -> }
+                onClick = {
+                    selectedFile?.let { file ->
+                        uploadFile(contexto, file, ticketId, userId) { _, _, _ -> }
+                    }
                 }
-                }) {
+            ) {
                 Text(text = "Cargar")
             }
         }
-        selectedFile?.let {
-                uri ->
-            val filenName = getFileName(contexto, uri)
-            Text(text= filenName)
+
+        selectedFile?.let { uri ->
+            val fileName = getFileName(contexto, uri)
+            Text(text = fileName)
         }
 
-        HorizontalDivider(
-            thickness = 1.dp
-        )
-        Column (
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Button(onClick = {downloadFile(contexto, "2")}) {
+        HorizontalDivider(thickness = 1.dp)
+
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Button(onClick = { downloadFile(contexto, "2") }) {
                 Text(text = "Descargar")
             }
         }
     }
 }
+
 
 fun getFileName(context: Context, uri: Uri): String {
     var name = "archivo_desconocido"
@@ -125,7 +133,7 @@ fun getFileSize(context: Context, uri: Uri): Long {
 }
 
 fun downloadFile(context: Context, id: String){
-    val url = "http://10.0.2.2:3000/download/$id"
+    val url = "http://10.0.2.2:3000/archivos/download/$id"
     val fileName = "archivo_$id" // hacer esto dinámico
     // carpeta (lugar), nombre
     val file = File(context.getExternalFilesDir
@@ -142,56 +150,74 @@ fun downloadFile(context: Context, id: String){
 
 }
 
-fun uploadFile(context: Context, uri: Uri, onFileUploaded:(Boolean)-> Unit ){
+fun uploadFile(
+    context: Context,
+    uri: Uri,
+    ticketId: Int,
+    senderUserId: Int,
+    onFileUploaded: (Boolean, String?, Int?) -> Unit
+) {
     CoroutineScope(Dispatchers.IO).launch {
         try {
             val contentResolver = context.contentResolver
             val inputStream = contentResolver.openInputStream(uri) ?: return@launch
 
-            // Guardamos el archivo en cache temporal
-            val tempFile = File(context.cacheDir, "uploadFile.tmp")
-            tempFile.outputStream().use { output ->
-                inputStream.copyTo(output)
-            }
+            // Copiamos el archivo a una ubicación temporal
+            val tempFile = File(context.cacheDir, getFileName(context, uri))
+            tempFile.outputStream().use { output -> inputStream.copyTo(output) }
 
             val fileName = getFileName(context, uri)
-            // Obtenemos el tipo MIME del archivo
             val mimeType = contentResolver.getType(uri) ?: "application/octet-stream"
-
-            // Creamos el cuerpo del archivo
             val requestBody = tempFile.asRequestBody(mimeType.toMediaTypeOrNull())
 
-
-            // Construimos multipart
             val multipartBody = MultipartBody.Builder()
                 .setType(MultipartBody.FORM)
                 .addFormDataPart("file", fileName, requestBody)
+                .addFormDataPart("ticket_id", ticketId.toString())
+                .addFormDataPart("sender_user_id", senderUserId.toString())
                 .build()
 
-            // Petición HTTP
             val client = OkHttpClient()
             val request = Request.Builder()
-                .url("http://10.0.2.2:3000/upload") // tu endpoint
+                .url("http://10.0.2.2:3000/archivos/upload")
                 .post(multipartBody)
                 .build()
 
             val response = client.newCall(request).execute()
+            val responseBody = response.body?.string()
+
             withContext(Dispatchers.Main) {
-                onFileUploaded(response.isSuccessful)
+                if (response.isSuccessful && responseBody != null) {
+                    try {
+                        val json = org.json.JSONObject(responseBody)
+                        val fileId = json.optInt("file_id", -1)
+                        if (fileId != -1) {
+                            onFileUploaded(true, fileName, fileId)
+                        } else {
+                            onFileUploaded(false, null, null)
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        onFileUploaded(false, null, null)
+                    }
+                } else {
+                    onFileUploaded(false, null, null)
+                }
             }
-
-
         } catch (e: Exception) {
             e.printStackTrace()
-            onFileUploaded(false)
+            withContext(Dispatchers.Main) { onFileUploaded(false, null, null) }
         }
     }
-
 }
+
+
 
 @Composable
 fun UploadButton(
-    onFileSent: (String) -> Unit // 👈 Nuevo parámetro que manda el nombre del archivo
+    ticketId: Int,
+    senderUserId: Int,
+    onFileSent: (String, Int) -> Unit
 ) {
     val contexto = LocalContext.current
     var selectedFile by remember { mutableStateOf<Uri?>(null) }
@@ -201,24 +227,20 @@ fun UploadButton(
     ) { uri: Uri? ->
         uri?.let { file ->
             selectedFile = file
-            val fileName = getFileName(contexto, file)
-            // Subir archivo
-            uploadFile(contexto, file) { uploaded ->
-                CoroutineScope(Dispatchers.Main).launch {
-                    if (uploaded) {
-                        Toast.makeText(contexto, "Archivo subido correctamente ✅", Toast.LENGTH_SHORT).show()
-                        // 👇 Llamamos el callback para mostrarlo como mensaje
-                        onFileSent(fileName)
-                    } else {
-                        Toast.makeText(contexto, "Error al subir el archivo ❌", Toast.LENGTH_SHORT).show()
-                    }
+            uploadFile(contexto, file, ticketId, senderUserId) { uploaded, fileName, fileId ->
+                if (uploaded && fileId != null) {
+                    Toast.makeText(contexto, "Archivo subido correctamente", Toast.LENGTH_SHORT).show()
+                    onFileSent(fileName ?: "Archivo", fileId)
+                } else {
+                    Toast.makeText(contexto, "Error al subir el archivo", Toast.LENGTH_SHORT).show()
                 }
             }
         }
     }
 
     Button(onClick = { filePicker.launch("*/*") }) {
-        Text(text = "📎")
+        Text("📎")
     }
 }
+
 

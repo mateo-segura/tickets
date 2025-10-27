@@ -95,7 +95,7 @@ fun VistaInteriorTicket() {
                 modifier = Modifier
                     .padding(top = infoColumnSize + editBoxSize)
             ){
-                ChatScreen()
+                //ChatScreen()
             }
 
             // Columna de datos de ticket

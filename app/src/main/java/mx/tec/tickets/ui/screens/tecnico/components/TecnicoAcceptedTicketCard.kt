@@ -51,8 +51,7 @@ fun TecnicoAcceptedTicketCard(
             .fillMaxSize()
             .padding(10.dp)
             .clickable {
-                //navController.navigate("detailaccepted/${jsonTicket}")
-                showSheet = true
+                navController.navigate("detailaccepted/${jsonTicket}?token=$jwtToken&userid=$userID")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         colors = CardDefaults.cardColors(

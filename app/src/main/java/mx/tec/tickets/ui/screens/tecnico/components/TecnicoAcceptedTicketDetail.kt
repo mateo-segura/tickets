@@ -42,8 +42,10 @@ import mx.tec.tickets.model.NonAcceptedTicket
 import mx.tec.tickets.ui.screens.SpinnerDropDown
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
+
+
 @Composable
-fun TecnicoAcceptedTicketDetail(acceptedticket: String, navController: NavController, token: String = "") {
+fun TecnicoAcceptedTicketDetail(acceptedticket: String, navController: NavController, userId: Int, token: String = "") {
     val nonAcceptedTicketJson = Gson().fromJson(acceptedticket, NonAcceptedTicket::class.java)
 
     /*Importado de TicketScreen.kt (porque ya obteniamos la info del ticket en este componente y la navegación ya estaba implementada acá)*/
@@ -95,7 +97,12 @@ fun TecnicoAcceptedTicketDetail(acceptedticket: String, navController: NavContro
                     modifier = Modifier
                         .padding(top = infoColumnSize + editBoxSize)
                 ){
-                    ChatScreen()
+                    ChatScreen(
+                        context = context,
+                        ticketId = nonAcceptedTicketJson.ticketID,
+                        userId = userId,
+                        token = token
+                    )
                 }
 
                 // Columna de datos de ticket

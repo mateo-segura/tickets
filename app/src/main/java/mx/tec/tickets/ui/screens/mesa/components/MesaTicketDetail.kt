@@ -44,7 +44,7 @@ import mx.tec.tickets.ui.screens.SpinnerDropDown
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
 @Composable
-fun MesaTicketDetail(acceptedticket: String, navController: NavController, token: String = "") {
+fun MesaTicketDetail(acceptedticket: String, navController: NavController, userId: Int, token: String = "") {
     val nonAcceptedTicketJson = Gson().fromJson(acceptedticket, CommonTicket::class.java)
 
     /*Importado de TicketScreen.kt (porque ya obteniamos la info del ticket en este componente y la navegación ya estaba implementada acá)*/
@@ -95,8 +95,16 @@ fun MesaTicketDetail(acceptedticket: String, navController: NavController, token
                 Surface (
                     modifier = Modifier
                         .padding(top = infoColumnSize + editBoxSize)
-                ){
-                    ChatScreen()
+                ) {
+
+                    if (nonAcceptedTicketJson != null) {
+                        ChatScreen(
+                            context = context,
+                            ticketId = nonAcceptedTicketJson.id, //
+                            userId = userId, // El nuevo parámetro que acabamos de añadir
+                            token = token
+                        )
+                    }
                 }
 
                 // Columna de datos de ticket

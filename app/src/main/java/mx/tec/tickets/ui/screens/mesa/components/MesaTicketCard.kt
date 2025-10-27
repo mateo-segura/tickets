@@ -32,7 +32,7 @@ fun MesaTicketCard(
     nonAcceptedTicket: CommonTicket,
     navController: NavController,
     userID: Int,
-    ticket: String
+    token: String
 ) {
     val padding = 10.dp
     val fontSizeNormal = 11.sp
@@ -43,8 +43,8 @@ fun MesaTicketCard(
             .fillMaxSize()
             .padding(10.dp)
             .clickable {
-                val jsonTicket = Gson().toJson(nonAcceptedTicket)
-                navController.navigate("detailcommon/${jsonTicket}?token=$ticket")
+                val ticketJson = Gson().toJson(nonAcceptedTicket)
+                navController.navigate("detailcommon/$ticketJson?token=$token&userid=$userID")
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 10.dp),
         colors = CardDefaults.cardColors(

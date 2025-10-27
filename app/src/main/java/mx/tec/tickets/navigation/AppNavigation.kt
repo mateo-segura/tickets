@@ -77,17 +77,24 @@ fun AppNavigation() {
             )
         }
         composable(
-            route = "detailaccepted/{acceptedticket}?token={token}",
+            // 1. Añade "userid" a la ruta
+            route = "detailaccepted/{acceptedticket}?token={token}&userid={userid}",
             arguments = listOf(
                 navArgument("acceptedticket") { type = NavType.StringType },
-                navArgument("token") { defaultValue = ""; type = NavType.StringType }
+                navArgument("token") { defaultValue = ""; type = NavType.StringType },
+                // 2. Añade el argumento "userid" a la lista
+                navArgument("userid") { defaultValue = 0; type = NavType.IntType }
             ),
         ) { backStackEntry ->
             val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
             val token = backStackEntry.arguments?.getString("token") ?: ""
+            // 3. Extrae el userID
+            val userID = backStackEntry.arguments?.getInt("userid") ?: 0
+
             TecnicoAcceptedTicketDetail(
                 acceptedticket = acceptedticket ?: "",
                 navController,
+                userId = userID, // 4. Pasa el userId al composable
                 token = token
             )
         }
@@ -132,17 +139,20 @@ fun AppNavigation() {
             MesaMenuScreen(navController, token, role, userID)
         }
         composable(
-            route = "detailcommon/{acceptedticket}?token={token}",
+            route = "detailcommon/{acceptedticket}?token={token}&userid={userid}", // Añadido &userid
             arguments = listOf(
                 navArgument("acceptedticket") { type = NavType.StringType },
-                navArgument("token") { defaultValue = ""; type = NavType.StringType }
+                navArgument("token") { defaultValue = ""; type = NavType.StringType },
+                navArgument("userid") { defaultValue = 0; type = NavType.IntType } // Añadido este argumento
             ),
         ) { backStackEntry ->
             val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
             val token = backStackEntry.arguments?.getString("token") ?: ""
+            val userID = backStackEntry.arguments?.getInt("userid") ?: 0 // Añadida esta línea
             MesaTicketDetail(
                 acceptedticket = acceptedticket ?: "",
                 navController,
+                userId = userID, // Pasamos el userId
                 token = token
             )
         }
@@ -161,11 +171,22 @@ fun AppNavigation() {
             AdminMenuScreen(navController, token, role, userID)
         }
         composable(
-            route = "detailcommon/{acceptedticket}",  //no se pueden mandar a objetos, se necesita mandar en formato json
-            arguments = listOf(navArgument("acceptedticket") { type = NavType.StringType }),
+            route = "detailcommon/{acceptedticket}?token={token}&userid={userid}", // Añadido token y userid
+            arguments = listOf(
+                navArgument("acceptedticket") { type = NavType.StringType },
+                navArgument("token") { defaultValue = ""; type = NavType.StringType }, // Añadido
+                navArgument("userid") { defaultValue = 0; type = NavType.IntType } // Añadido
+            ),
         ) { backStackEntry ->
             val acceptedticket = backStackEntry.arguments?.getString("acceptedticket")
-            MesaTicketDetail(acceptedticket = acceptedticket ?: "", navController)
+            val token = backStackEntry.arguments?.getString("token") ?: "" // Añadido
+            val userID = backStackEntry.arguments?.getInt("userid") ?: 0 // Añadido
+            MesaTicketDetail(
+                acceptedticket = acceptedticket ?: "",
+                navController,
+                userId = userID, // Pasamos el userId
+                token = token    // Pasamos el token
+            )
         }
 
 

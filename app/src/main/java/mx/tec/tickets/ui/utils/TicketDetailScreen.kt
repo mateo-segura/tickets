@@ -87,7 +87,7 @@ package mx.tec.tickets.ui.utils
                         modifier = Modifier
                             .padding(top = infoColumnSize + editBoxSize)
                     ){
-                        ChatScreen()
+                        //ChatScreen()
                     }
 
                     // Columna de datos de ticket

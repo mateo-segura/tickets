@@ -95,7 +95,7 @@ fun TecnicoNonAcceptedTicketDetail(nonacceptedticket: String, navController: Nav
                     modifier = Modifier
                         .padding(top = infoColumnSize + editBoxSize)
                 ){
-                    ChatScreen()
+                    //ChatScreen()
                 }
 
                 // Columna de datos de ticket

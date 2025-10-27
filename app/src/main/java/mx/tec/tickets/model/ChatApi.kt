@@ -6,16 +6,20 @@ import retrofit2.Response
 data class MessageRequest(
     val ticket_id: Int,
     val sender_user_id: Int,
-    val body: String
+    val body: String,
+    val file_id: Int? = null
 )
+
 
 data class MessageResponse(
     val id: Int,
     val ticket_id: Int,
     val sender_user_id: Int,
     val body: String,
-    val created_at: String
+    val created_at: String,
+    val file_id: Int? = null
 )
+
 
 
 interface ChatApi {
