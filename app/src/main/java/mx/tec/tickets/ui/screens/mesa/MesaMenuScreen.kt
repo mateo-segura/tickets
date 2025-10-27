@@ -63,7 +63,7 @@ fun MesaMenuScreen(navController: NavController,token: String,role: String,userI
             when (selectedOption) {
                 0 -> MesaHomeScreen(navController,token,role,userID)
                 1 -> MesaClosedTicketsScreen(navController, token, role, userID)
-                2 -> MesaNotificationsScreen(navController, userID)
+                2 -> NotificationsScreen(navController, userID, token)
             }
         }
     }
@@ -82,6 +82,10 @@ fun MesaClosedTicketsScreen(navController: NavController, token: String, role: S
 }
 
 @Composable
-fun MesaNotificationsScreen(navController:NavController, userID: Int) {
-    MainNotificationScreen(navController, userID)
+fun NotificationsScreen(
+    navController: NavController,
+    userID: Int,
+    token: String
+) {
+    MainNotificationScreen(navController, userID, token)
 }

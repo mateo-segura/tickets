@@ -100,26 +100,50 @@ fun AppNavigation() {
         }
 
         // Notificaciones
-        composable("notificationList/{userId}") { backStack ->
-            val userId = backStack.arguments?.getString("userId")?.toInt() ?: 0
-            NotificationList(navController, userId)
-        }
 
-        composable("notificationDetail/{notification}") { backStack ->
-            val json = backStack.arguments?.getString("notification") ?: ""
-            NotificationDetail(json, navController)
-        }
-
-// pantalla principal de notificaciones
-// pantalla principal de notificaciones
         composable(
-            route = "mainnotificationscreen/{userid}",
+            route = "notificationList/{userId}?token={token}",
             arguments = listOf(
-                navArgument("userid") { type = NavType.IntType }
+                navArgument("userId") { type = NavType.IntType },
+                navArgument("token") { defaultValue = ""; type = NavType.StringType }
+            )
+        ) { backStack ->
+            val userId = backStack.arguments?.getInt("userId") ?: 0
+            val token = backStack.arguments?.getString("token") ?: ""
+
+
+            NotificationList(navController, userId, token)
+        }
+
+        composable(
+            route = "mainnotificationscreen/{userid}?token={token}",
+            arguments = listOf(
+                navArgument("userid") { type = NavType.IntType },
+                navArgument("token") { defaultValue = ""; type = NavType.StringType }
             )
         ) { backStackEntry ->
             val userID = backStackEntry.arguments?.getInt("userid") ?: 0
-            MainNotificationScreen(navController, userID)
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+
+
+            MainNotificationScreen(navController, userID, token)
+
+        }
+
+// pantalla principal de notificaciones
+
+        composable(
+            route = "mainnotificationscreen/{userid}?token={token}",
+            arguments = listOf(
+                navArgument("userid") { type = NavType.IntType },
+                navArgument("token") { defaultValue = ""; type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val userID = backStackEntry.arguments?.getInt("userid") ?: 0
+            val token = backStackEntry.arguments?.getString("token") ?: ""
+
+
+            MainNotificationScreen(navController, userID, token)
         }
 
 

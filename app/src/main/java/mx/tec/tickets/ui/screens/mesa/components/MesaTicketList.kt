@@ -74,9 +74,9 @@ fun fetchTickets(
     val tickets = mutableListOf<CommonTicket>()
     val queue = Volley.newRequestQueue(context)
     val baseUrl = if (!isClosed){
-        "http://10.0.2.2:3000/tickets"
+        "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/tickets"
     } else {
-        "http://10.0.2.2:3000/tickets/ticketsCerrados"
+        "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/tickets/ticketsCerrados"
     }
     val metodo = Request.Method.GET
 

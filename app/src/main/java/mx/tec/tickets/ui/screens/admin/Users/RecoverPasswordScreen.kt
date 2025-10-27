@@ -186,7 +186,7 @@ fun RecoverPasswordScreen(
 
                         isLoading = true
 
-                        val url = "http://10.0.2.2:3000/usuarios/recuperar" // Emulador -> tu localhost
+                        val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/usuarios/recuperar" // Emulador -> tu localhost
                         val body = JSONObject().apply {
                             put("email", email)
                             put("password", newPass)

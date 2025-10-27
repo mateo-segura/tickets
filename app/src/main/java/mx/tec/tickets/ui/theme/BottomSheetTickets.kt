@@ -174,7 +174,7 @@ fun BottomSheetTickets(
 }
 
 fun acceptTicket(context: Context, jwtToken: String, ticketId: Int, onSuccess: () -> Unit) {
-    val url = "http://10.0.2.2:3000/tickets/aceptarTicket" // Adjust to your route if needed
+    val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/tickets/aceptarTicket" // Adjust to your route if needed
     val queue = Volley.newRequestQueue(context)
 
     val jsonBody = JSONObject()
@@ -208,7 +208,7 @@ fun acceptTicket(context: Context, jwtToken: String, ticketId: Int, onSuccess: (
 }
 
 fun rejectTicket(context: Context, jwtToken: String, ticketId: Int, onSuccess: () -> Unit) {
-    val url = "http://10.0.2.2:3000/tickets/rechazarTicket" // Adjust to your route if needed
+    val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/tickets/rechazarTicket" // Adjust to your route if needed
     val queue = Volley.newRequestQueue(context)
 
     val jsonBody = JSONObject()

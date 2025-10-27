@@ -12,7 +12,7 @@ import org.json.JSONArray
 import org.json.JSONObject
 
 object ChatRepository {
-    private const val BASE_URL = "http://10.0.2.2:3000/ticketsMessages"
+    private const val BASE_URL = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/ticketMessages"
 
     // GET mensajes por ticket
     fun fetchMessagesByTicket(

@@ -83,7 +83,7 @@ fun fetchAceptedTickets(
 ) {
     val AcceptedTickets = mutableListOf<NonAcceptedTicket>()
     val queue = Volley.newRequestQueue(context)
-    val baseUrl = "http://10.0.2.2:3000/tickets/aceptedTickets/${userID}"
+    val baseUrl = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/tickets/aceptedTickets/${userID}"
     val metodo = Request.Method.GET
 
     val queryParams = mutableListOf<String>()
@@ -111,7 +111,7 @@ fun fetchAceptedTickets(
         Log.d("API_RESPONSE", "Filtered Tickets Received: ${response.toString()}")
         for (i in 0 until response.length()) {
             val acceptedTickets = NonAcceptedTicket(
-                response.getJSONObject(i).getInt("Ticket_ID"),
+                response.getJSONObject(i).getInt("id"),
                 response.getJSONObject(i).getString("title"),
                 response.getJSONObject(i).getString("description"),
                 response.getJSONObject(i).getString("category"),

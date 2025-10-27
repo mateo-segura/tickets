@@ -63,7 +63,7 @@ fun TecnicoMenuScreen(navController: NavController,token: String,role: String,us
                 when (selectedOption) {
                     0 -> HomeScreen(navController,token,role,userID)
                     1 -> TecnicoClosedTicketsScreen(navController, token, role, userID)
-                    2 -> NotificationsScreen(navController, userID)
+                    2 -> NotificationsScreen(navController, userID, token)
                 }
             }
 
@@ -85,8 +85,9 @@ fun TecnicoClosedTicketsScreen(navController: NavController, token: String, role
 @Composable
 fun NotificationsScreen(
     navController: NavController,
-    userID: Int
+    userID: Int,
+    token: String
 ) {
-    MainNotificationScreen(navController, userID)
+    MainNotificationScreen(navController, userID, token)
 }
 

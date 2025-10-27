@@ -94,7 +94,7 @@ fun ConfirmDeleteUserScreen(
 
                                     // Emulador Android: 10.0.2.2 apunta a tu localhost
                                     // OJO: revisa que el endpoint coincida con tu backend: "desabilitar" vs "deshabilitar"
-                                    val url = "http://10.0.2.2:3000/usuarios/desabilitar"
+                                    val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/usuarios/desabilitar"
 
                                     val body = JSONObject().apply {
                                         put("email", emailArg)

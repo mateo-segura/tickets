@@ -292,7 +292,7 @@ fun fetchTecnicos(
     onSuccess: (List<Tecnico>) -> Unit
 ) {
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/usuarios/tecnicos"
+    val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/usuarios/tecnicos"
 
     val request = object : JsonArrayRequest(
         Method.GET, url, null,
@@ -339,7 +339,7 @@ fun crearTicket(
     onError: (String) -> Unit
 ) {
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/tickets/insertar"
+    val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/tickets/insertar"
 
     val jsonBody = JSONObject().apply {
         put("title", title)

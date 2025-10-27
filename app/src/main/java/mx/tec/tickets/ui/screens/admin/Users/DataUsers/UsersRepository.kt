@@ -12,7 +12,7 @@ import org.json.JSONObject
 object UsersRepository {
 
     // Emulador → host local
-    private const val BASE_URL = "http://10.0.2.2:3000"
+    private const val BASE_URL = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com"
     private const val USERS_ENDPOINT = "$BASE_URL/usuarios"
     private const val USERS_INSERT_ENDPOINT = "$BASE_URL/usuarios/insertar"  // ← CAMBIO: endpoint correcto para crear
 

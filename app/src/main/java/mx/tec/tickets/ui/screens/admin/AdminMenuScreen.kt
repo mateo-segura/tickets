@@ -74,7 +74,7 @@ fun AdminMenuScreen(navController: NavController, token: String, role: String, u
             when (selectedOption) {
                 0 -> HomeScreen(navController, token, role, userID)
                 1 -> TecnicoClosedTicketsScreen(navController, token, role, userID)
-                2 -> UsersScreen(navController, userID) // mantiene el flujo original
+                2 -> UsersScreen(navController, userID,token) // mantiene el flujo original
                 3 -> NotificationsScreen(navController, token, role, userID) // mantiene el flujo original
             }
         }
@@ -92,8 +92,8 @@ fun TecnicoClosedTicketsScreen(navController: NavController, token: String, role
 }
 
 @Composable
-fun UsersScreen (navController: NavController, userID: Int) {
-    MainNotificationScreen(navController, userID)
+fun UsersScreen (navController: NavController, userID: Int,token: String) {
+    MainNotificationScreen(navController, userID,token)
 }
 @Composable
 fun NotificationsScreen (navController: NavController, token: String, role: String, userID: Int){

@@ -133,7 +133,7 @@ fun getFileSize(context: Context, uri: Uri): Long {
 }
 
 fun downloadFile(context: Context, id: String){
-    val url = "http://10.0.2.2:3000/archivos/download/$id"
+    val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/archivos/download/$id"
     val fileName = "archivo_$id" // hacer esto dinámico
     // carpeta (lugar), nombre
     val file = File(context.getExternalFilesDir
@@ -179,7 +179,7 @@ fun uploadFile(
 
             val client = OkHttpClient()
             val request = Request.Builder()
-                .url("http://10.0.2.2:3000/archivos/upload")
+                .url("http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/archivos/upload")
                 .post(multipartBody)
                 .build()
 

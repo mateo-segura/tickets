@@ -52,7 +52,7 @@ fun fetchTickets(
 ) {
     val tickets = mutableListOf<CommonTicket>()
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/tickets"
+    val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/tickets"
     val metodo = Request.Method.GET
     val listener = Response.Listener<JSONArray> { response ->
         for (i in 0 until response.length()) {

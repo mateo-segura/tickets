@@ -20,7 +20,7 @@ import mx.tec.tickets.ui.screens.tecnico.components.NotificationList
 import mx.tec.tickets.ui.theme.drawColoredShadow
 
 @Composable
-fun MainNotificationScreen(navController: NavController, userID: Int) {
+fun MainNotificationScreen(navController: NavController, userID: Int, token: String) {
     var showFilterType by remember { mutableStateOf(false) }
     var showFilterRead by remember { mutableStateOf(false) }
     var showFilterDate by remember { mutableStateOf(false) }
@@ -65,7 +65,7 @@ fun MainNotificationScreen(navController: NavController, userID: Int) {
                 .fillMaxSize()
                 .padding(horizontal = 8.dp)
         ) {
-            NotificationList(navController, userID)
+            NotificationList(navController, userID, token)
         }
     }
 }

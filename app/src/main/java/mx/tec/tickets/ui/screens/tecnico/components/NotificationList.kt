@@ -18,13 +18,14 @@ import org.json.JSONArray
 @Composable
 fun NotificationList(
     navController: NavController,
-    userID: Int
+    userID: Int,
+    token: String
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     var notifications by remember { mutableStateOf(listOf<NotificationItem>()) }
 
     LaunchedEffect(Unit) {
-        fetchNotifications(context, userID) { fetched ->
+        fetchNotifications(context, userID, token) { fetched ->
             notifications = fetched
         }
     }
@@ -39,11 +40,12 @@ fun NotificationList(
 fun fetchNotifications(
     context: Context,
     userID: Int,
+    token: String,
     onResult: (List<NotificationItem>) -> Unit
 ) {
     val list = mutableListOf<NotificationItem>()
     val queue = Volley.newRequestQueue(context)
-    val url = "http://10.0.2.2:3000/notificaciones/$userID"
+    val url = "http://Api-tickets-env.eba-3z343hb2.us-east-1.elasticbeanstalk.com/notificaciones/$userID"
 
     val listener = Response.Listener<JSONArray> { response ->
         for (i in 0 until response.length()) {
@@ -72,7 +74,16 @@ fun fetchNotifications(
     val errorListener = Response.ErrorListener { error ->
         Log.e("VolleyError", error.message ?: "Error desconocido")
     }
+    val request = object : JsonArrayRequest(
+        Request.Method.GET, url, null, listener, errorListener
+    ) {
+        override fun getHeaders(): MutableMap<String, String> {
+            val headers = HashMap<String, String>()
+            headers["Authorization"] = "Bearer $token"
+            return headers
+        }
+    }
+    // --- FIN DE LA SOLUCIÓN ---
 
-    val request = JsonArrayRequest(Request.Method.GET, url, null, listener, errorListener)
     queue.add(request)
 }
